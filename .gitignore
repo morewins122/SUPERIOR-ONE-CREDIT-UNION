@@ -11,3 +11,6 @@ apps/api/generated/
 apps/web/.vite/
 .vscode/
 .DS_Store
+
+# Local Netlify folder
+.netlify
