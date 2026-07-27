@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  FIXED_DEPOSIT
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+  CARD_PAYMENT
+}
+
+enum Direction {
+  CREDIT
+  DEBIT
+}
+
+enum LoanStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ACTIVE
+  CLOSED
+}
+
+enum CardStatus {
+  ACTIVE
+  REPLACED
+  CLOSED
+}
+
+model User {
+  id                      String         @id @default(cuid())
+  firstName               String
+  lastName                String
+  email                   String         @unique
+  phone                   String
+  passwordHash            String
+  role                    Role           @default(USER)
+  emailVerified           Boolean        @default(false)
+  twoFactorEnabled        Boolean        @default(false)
+  profileImageUrl         String?
+  notificationPreferences Json?
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+
+  accounts      Account[]
+  transactions  Transaction[]
+  cards         Card[]
+  loans         Loan[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+}
+
+model Account {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          AccountType
+  accountNumber String      @unique
+  balance       Decimal     @db.Decimal(12, 2)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  transactionsFrom Transaction[] @relation("TransactionFrom")
+  transactionsTo   Transaction[] @relation("TransactionTo")
+  cards            Card[]
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId   String
+  account     Account         @relation("TransactionFrom", fields: [accountId], references: [id], onDelete: Cascade)
+  toAccountId String?
+  toAccount   Account?        @relation("TransactionTo", fields: [toAccountId], references: [id])
+  type        TransactionType
+  direction   Direction
+  amount      Decimal         @db.Decimal(12, 2)
+  description String?
+  createdAt   DateTime        @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Card {
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId   String
+  account     Account    @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  last4       String
+  expiryMonth String
+  expiryYear  String
+  isFrozen    Boolean    @default(false)
+  status      CardStatus @default(ACTIVE)
+  createdAt   DateTime   @default(now())
+}
+
+model Loan {
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String
+  amount      Decimal    @db.Decimal(12, 2)
+  termMonths  Int
+  annualRate  Decimal    @db.Decimal(5, 2)
+  status      LoanStatus @default(PENDING)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,142 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f2f6f8;
+  --surface: #ffffff;
+  --text: #10212c;
+  --muted: #4b5f6b;
+  --accent: #1a7f88;
+  --accent-2: #f57f36;
+}
+
+.dark {
+  --bg: #08131d;
+  --surface: #10212c;
+  --text: #ebf4f7;
+  --muted: #a4c0ce;
+  --accent: #35b8c2;
+  --accent-2: #ffae45;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(29, 120, 116, 0.12), transparent 28%),
+    radial-gradient(circle at 90% 0%, rgba(244, 185, 66, 0.12), transparent 24%),
+    var(--bg);
+  color: var(--text);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Inter", sans-serif;
+}
+
+.bank-card {
+  background: linear-gradient(135deg, #1a7f88, #10212c 55%, #f57f36);
+  color: #fff;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid rgba(16, 42, 67, 0.08);
+  box-shadow: 0 18px 40px rgba(16, 42, 67, 0.08);
+  border-radius: 24px;
+}
+
+@keyframes fadeScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes skeletonSweep {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeScale 0.4s ease-out both;
+}
+
+.animate-slide-up {
+  animation: slideUpFade 0.45s ease-out both;
+}
+
+.bank-shell {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
+}
+
+.bank-pill {
+  border-radius: 9999px;
+}
+
+.bank-hover-lift {
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.bank-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(16, 42, 67, 0.12);
+}
+
+.bank-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.bank-ripple::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.35), transparent 60%);
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.bank-ripple:hover::after {
+  opacity: 1;
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(100deg, #e5e7eb 10%, #f3f4f6 45%, #e5e7eb 80%);
+  background-size: 200% 100%;
+  animation: skeletonSweep 1.2s linear infinite;
+}
+

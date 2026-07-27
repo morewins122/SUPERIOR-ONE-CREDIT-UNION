@@ -1,0 +1,29 @@
+{
+  "name": "superior-one-credit-union",
+  "version": "1.0.0",
+  "description": "Full-stack credit union banking platform.",
+  "private": true,
+  "scripts": {
+    "dev:web": "npm --workspace superior-one-web run dev",
+    "dev:api": "npm --workspace superior-one-api run dev",
+    "dev": "npm run dev:api",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "seed": "npm --workspace superior-one-api run prisma:seed",
+    "db:push": "npm --workspace superior-one-api run prisma:push",
+    "db:migrate": "npm --workspace superior-one-api run prisma:migrate"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "keywords": [
+    "banking",
+    "education",
+    "simulator"
+  ],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

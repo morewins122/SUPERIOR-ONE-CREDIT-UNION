@@ -1,0 +1,28 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">One Credit Union Logo</title>
+  <desc id="desc">Stylized number one with green ring and One Credit Union text.</desc>
+
+  <defs>
+    <linearGradient id="pillarGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2AA160"/>
+      <stop offset="100%" stop-color="#0E5C4D"/>
+    </linearGradient>
+    <linearGradient id="baseGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1F9788"/>
+      <stop offset="100%" stop-color="#2B8D72"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="760" fill="#FFFFFF"/>
+
+  <g transform="translate(0,-10)">
+    <rect x="504" y="115" width="152" height="340" fill="url(#pillarGradient)"/>
+    <polygon points="504,170 592,95 656,95 656,170 592,170 504,250" fill="#0E5C4D"/>
+    <polygon points="592,170 656,170 656,455 592,455" fill="#154D42"/>
+
+    <ellipse cx="600" cy="350" rx="184" ry="92" fill="none" stroke="#2AA160" stroke-width="56"/>
+    <rect x="504" y="480" width="224" height="76" fill="url(#baseGradient)"/>
+  </g>
+
+  <text x="600" y="695" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="94" font-weight="700" fill="#0E5C4D">One Credit Union</text>
+</svg>
