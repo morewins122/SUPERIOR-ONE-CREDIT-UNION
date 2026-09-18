@@ -62,18 +62,19 @@ export function DashboardLayout() {
 
   return (
     <section className="min-h-screen overflow-x-hidden bg-[#F5F7F8] md:[zoom:1.04] xl:[zoom:1.08]">
-      <header className="sticky top-0 z-50 w-full rounded-b-[36px] bg-[#145A5A] px-4 py-5 text-white shadow-[0_24px_60px_rgba(20,90,90,0.24)] sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-50 w-full rounded-b-[36px] bg-[#006B8E] px-4 py-5 text-white shadow-[0_24px_60px_rgba(20,90,90,0.24)] sm:px-6 lg:px-8">
         <div className="mx-auto flex min-h-[150px] max-w-7xl flex-col justify-between gap-5 lg:flex-row lg:items-center">
           <div className="flex items-start justify-between gap-4 lg:flex-col lg:items-start lg:justify-start">
             <div>
               <div>
                 <button
                   type="button"
+                  data-preloader="enabled"
                   onClick={() => void navigatePage("/dashboard.html", { title: "Dashboard", durationMs: 900, skeleton: "dashboard" })}
                   className="text-left text-[1.6rem] font-extrabold tracking-tight transition hover:text-[#d9f2ef] sm:text-3xl lg:text-[2.15rem]"
-                  aria-label="Go to Superior One Credit Union dashboard home"
+                  aria-label="Go to Tampa Bay Credit Union dashboard home"
                 >
-                  Superior One Credit Union
+                  Tampa Bay Credit Union
                 </button>
                 <p className="mt-3 text-sm font-medium tracking-[0.16em] text-white/80">Personal Online Banking</p>
               </div>
@@ -135,7 +136,7 @@ export function DashboardLayout() {
                 aria-haspopup="menu"
                 aria-controls="profile-menu"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#145A5A]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#006B8E]">
                   <span className="text-sm font-bold">{displayName.charAt(0).toUpperCase()}</span>
                 </div>
                 <div className="hidden text-left sm:block">
@@ -152,17 +153,18 @@ export function DashboardLayout() {
                 }`}
               >
                 {[
-                  ["My Profile", "/dashboard/profile"],
-                  ["Settings", "/dashboard/profile"]
-                ].map(([label, to]) => (
+                  ["My Profile", "/dashboard/profile", "enabled"],
+                  ["Settings", "/dashboard/profile", "enabled"]
+                ].map(([label, to, preloader]) => (
                   <button
                     key={label}
                     type="button"
+                    data-preloader={preloader}
                     onClick={() => {
                       setShowProfileMenu(false);
                       void navigatePage(to, { title: label, durationMs: 1000 });
                     }}
-                    className="flex w-full items-center rounded-xl px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-[#e9f7f6] hover:text-[#145A5A]"
+                    className="flex w-full items-center rounded-xl px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-[#e9f7f6] hover:text-[#006B8E]"
                   >
                     {label}
                   </button>
@@ -173,14 +175,14 @@ export function DashboardLayout() {
                     setShowProfileMenu(false);
                     setShowNotifications(true);
                   }}
-                  className="flex w-full items-center rounded-xl px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-[#e9f7f6] hover:text-[#145A5A]"
+                  className="flex w-full items-center rounded-xl px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-[#e9f7f6] hover:text-[#006B8E]"
                 >
                   Messages
                 </button>
                 <button
                   type="button"
                   onClick={() => void handleLogout()}
-                  className="mt-1 flex w-full items-center gap-2 rounded-xl bg-[#145A5A] px-4 py-3 text-left text-sm font-semibold text-white transition hover:bg-[#0f4747]"
+                  className="mt-1 flex w-full items-center gap-2 rounded-xl bg-[#006B8E] px-4 py-3 text-left text-sm font-semibold text-white transition hover:bg-[#005A7A]"
                 >
                   <LogOut size={16} />
                   Logout
@@ -208,7 +210,7 @@ export function DashboardLayout() {
 
         <main className="min-w-0 space-y-4">
           <div className="h-8">
-            <p className={`text-sm font-semibold uppercase tracking-[0.16em] text-[#145A5A] transition-all duration-300 ease-in-out ${isContentVisible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}>
+            <p className={`text-sm font-semibold uppercase tracking-[0.16em] text-[#006B8E] transition-all duration-300 ease-in-out ${isContentVisible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}>
               {pageTitle}
             </p>
           </div>

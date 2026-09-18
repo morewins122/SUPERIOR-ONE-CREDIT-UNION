@@ -1,4 +1,4 @@
-# Superior One Credit Union
+# Tampa Bay Credit Union
 
 Full-stack credit union banking platform.
 
@@ -200,7 +200,7 @@ docker compose exec api npm run prisma:seed --workspace superior-one-api
 ## Default Accounts
 
 - Admin (seeded):
-  - Email: `admin@superioronecu.com`
+  - Email: `admin@tampabaycreditunion.com`
   - Password: `Admin123!`
 - User (seeded users):
   - Password: `User12345!`

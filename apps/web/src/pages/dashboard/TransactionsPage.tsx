@@ -212,7 +212,7 @@ export function TransactionsPage() {
       </div>
 
       {isSearching ? (
-        <div className="inline-flex items-center gap-2 rounded-full bg-[#edf8f7] px-4 py-2 text-sm font-medium text-[#145A5A]">
+        <div className="inline-flex items-center gap-2 rounded-full bg-[#eefbfe] px-4 py-2 text-sm font-medium text-[#006B8E]">
           <Loader2 size={14} className="animate-spin" />
           Searching transactions...
         </div>

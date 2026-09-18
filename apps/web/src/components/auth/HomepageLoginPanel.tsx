@@ -19,7 +19,7 @@ type PendingCredentials = Pick<HomepageLoginFormValues, "userId" | "password" | 
 
 export function HomepageLoginPanel() {
   const { login } = useAuth();
-  const { navigatePage } = usePortalUX();
+  const { navigatePage, showLogoPreloader, hideLogoPreloader } = usePortalUX();
   const [showPassword, setShowPassword] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showWelcome, setShowWelcome] = useState(false);
@@ -111,11 +111,16 @@ export function HomepageLoginPanel() {
       return;
     }
 
-    if (twoFactorPin !== "1986") {
+    if (twoFactorPin !== "1985") {
       setTwoFactorError("Incorrect PIN. Please try again.");
       setTwoFactorPin("");
       return;
     }
+
+    showLogoPreloader();
+    window.setTimeout(() => {
+      hideLogoPreloader();
+    }, 7000);
 
     await completeSignInAfterVerification();
   };
@@ -127,7 +132,7 @@ export function HomepageLoginPanel() {
       {/* Brand header for a banking portal feel. */}
       <div className="mb-6">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#0f5f57]">Superior One Credit Union</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#0077A8]">Tampa Bay Credit Union</p>
           <h2 id="member-signin-title" className="text-lg font-bold text-slate-900">
             Sign On
           </h2>
@@ -144,7 +149,7 @@ export function HomepageLoginPanel() {
               id="homepage-username"
               type="text"
               autoComplete="username"
-              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-[#0f5f57] focus:ring-2 focus:ring-[#0f5f571f]"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-[#0077A8] focus:ring-2 focus:ring-[#0077A81f]"
               aria-invalid={errors.userId ? "true" : "false"}
               {...register("userId")}
             />
@@ -160,14 +165,14 @@ export function HomepageLoginPanel() {
                 id="homepage-password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                className="w-full rounded-xl border border-slate-300 px-3 py-2 pr-12 text-slate-900 outline-none transition focus:border-[#0f5f57] focus:ring-2 focus:ring-[#0f5f571f]"
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 pr-12 text-slate-900 outline-none transition focus:border-[#0077A8] focus:ring-2 focus:ring-[#0077A81f]"
                 aria-invalid={errors.password ? "true" : "false"}
                 {...register("password")}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((value) => !value)}
-                className="absolute inset-y-0 right-2 my-auto inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0f5f571f]"
+                className="absolute inset-y-0 right-2 my-auto inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0077A81f]"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -181,12 +186,12 @@ export function HomepageLoginPanel() {
               <input
                 id="homepage-remember-me"
                 type="checkbox"
-                className="h-4 w-4 rounded border-slate-300 text-[#0f5f57] focus:ring-[#0f5f57]"
+                className="h-4 w-4 rounded border-slate-300 text-[#0077A8] focus:ring-[#0077A8]"
                 {...register("rememberMe")}
               />
                 Remember User ID
             </label>
-                <Link className="min-h-11 text-sm font-medium leading-5 text-[#0f5f57] hover:text-[#0c4f48]" to="/forgot-password">
+                <Link className="min-h-11 text-sm font-medium leading-5 text-[#0077A8] hover:text-[#005A7A]" to="/forgot-password">
                   Forgot User ID/Password?
             </Link>
           </div>
@@ -196,18 +201,18 @@ export function HomepageLoginPanel() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#0f5f57] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0c4f48] disabled:cursor-not-allowed disabled:opacity-70"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#0077A8] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#005A7A] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : null}
             {isSubmitting ? "Signing On..." : "Sign On"}
           </button>
 
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-1 text-sm">
-            <Link to="/forgot-password" className="min-h-11 font-medium text-[#0f5f57] hover:text-[#0c4f48]">
+            <Link to="/forgot-password" className="min-h-11 font-medium text-[#0077A8] hover:text-[#005A7A]">
               Forgot User ID/Password?
             </Link>
             <span aria-hidden="true" className="text-slate-300">|</span>
-            <Link to="/register" className="min-h-11 font-medium text-[#0f5f57] hover:text-[#0c4f48]">
+            <Link to="/register" className="min-h-11 font-medium text-[#0077A8] hover:text-[#005A7A]">
               Enroll
             </Link>
           </div>
@@ -222,7 +227,7 @@ export function HomepageLoginPanel() {
             Verifying credentials...
           </div>
           <div className="mx-auto h-1.5 w-full max-w-sm overflow-hidden rounded-full bg-slate-200/80">
-            <div className="h-full w-1/2 animate-[pulse_1.1s_ease-in-out_infinite] rounded-full bg-[#0f5f57]" />
+            <div className="h-full w-1/2 animate-[pulse_1.1s_ease-in-out_infinite] rounded-full bg-[#0077A8]" />
           </div>
         </div>
       ) : (
@@ -250,7 +255,7 @@ export function HomepageLoginPanel() {
             >
               {showPinHint ? "Hide PIN" : "Show PIN"}
             </button>
-            {showPinHint ? <p className="text-sm font-semibold text-[#173f74]">Demo PIN: 1986</p> : null}
+            {showPinHint ? <p className="text-sm font-semibold text-[#173f74]">Demo PIN: 1985</p> : null}
           </div>
 
           <div className="grid grid-cols-3 gap-3">
@@ -325,7 +330,7 @@ export function HomepageLoginPanel() {
               Loading your account
             </div>
             <div className="mt-5 h-1.5 w-56 overflow-hidden rounded-full bg-slate-200/80">
-              <div className="h-full w-1/2 animate-[pulse_1.1s_ease-in-out_infinite] rounded-full bg-[#0f5f57]" />
+              <div className="h-full w-1/2 animate-[pulse_1.1s_ease-in-out_infinite] rounded-full bg-[#0077A8]" />
             </div>
           </div>
         </div>

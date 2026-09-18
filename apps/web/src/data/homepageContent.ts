@@ -32,10 +32,10 @@ export const homepageContent = {
     sectionLabel: "Banking Services",
     menus: [
       {
-        accountType: "Superior One Rewards",
-        title: "Superior One Rewards",
+        accountType: "Tampa Bay Credit Union Rewards",
+        title: "Tampa Bay Credit Union Rewards",
         subtitle: "Everyday savings tools with balance tracking, statements, and interest insights.",
-        accent: "from-[#0f5f57] to-[#163c3a]",
+        accent: "from-[#0077A8] to-[#163c3a]",
         actions: [
           { label: "View Savings Balance", iconClass: "fa-solid fa-wallet" },
           { label: "Savings Account Details", iconClass: "fa-solid fa-circle-info" },
@@ -46,8 +46,8 @@ export const homepageContent = {
         ]
       },
       {
-        accountType: "Superior One Travel",
-        title: "Superior One Travel",
+        accountType: "Tampa Bay Credit Union Travel",
+        title: "Tampa Bay Credit Union Travel",
         subtitle: "Manage travel savings, foreign currency, transfers, and vacation goals.",
         accent: "from-[#203040] to-[#526070]",
         actions: [
@@ -60,8 +60,8 @@ export const homepageContent = {
         ]
       },
       {
-        accountType: "Superior One Platinum",
-        title: "Superior One Platinum",
+        accountType: "Tampa Bay Credit Union Platinum",
+        title: "Tampa Bay Credit Union Platinum",
         subtitle: "High-yield savings, premium banking services, and financial growth tools.",
         accent: "from-[#7b5d21] to-[#d6aa4f]",
         actions: [
@@ -74,8 +74,8 @@ export const homepageContent = {
         ]
       },
       {
-        accountType: "Superior One Access",
-        title: "Superior One Access",
+        accountType: "Tampa Bay Credit Union Access",
+        title: "Tampa Bay Credit Union Access",
         subtitle: "Digital banking, transfers, account security, and mobile banking services.",
         accent: "from-[#1f4e4a] to-[#97c7bc]",
         actions: [

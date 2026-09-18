@@ -30,7 +30,7 @@ export function SecurityPage() {
               <div key={alert.title} className="rounded-xl bg-[#f4faf8] p-4 dark:bg-slate-900">
                 <p className="font-semibold text-slate-900 dark:text-slate-100">{alert.title}</p>
                 <p className="mt-1 text-sm text-slate-500">{alert.description}</p>
-                <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-[#0f5f57]">{alert.severity}</p>
+                <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-[#0077A8]">{alert.severity}</p>
               </div>
             ))}
           </div>

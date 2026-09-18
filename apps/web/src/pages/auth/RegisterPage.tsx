@@ -123,7 +123,7 @@ export function RegisterPage() {
           <label htmlFor="firstName" className="mb-1 block text-sm">First name</label>
           <input
             id="firstName"
-            className={`w-full rounded-xl border px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#0f5f57] ${errors.firstName ? "border-red-500 ring-1 ring-red-300" : "border-slate-300"}`}
+            className={`w-full rounded-xl border px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#0077A8] ${errors.firstName ? "border-red-500 ring-1 ring-red-300" : "border-slate-300"}`}
             value={formData.firstName}
             onChange={(event) => handleInputChange("firstName", event.target.value)}
             aria-invalid={Boolean(errors.firstName)}
@@ -136,7 +136,7 @@ export function RegisterPage() {
           <label htmlFor="lastName" className="mb-1 block text-sm">Last name</label>
           <input
             id="lastName"
-            className={`w-full rounded-xl border px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#0f5f57] ${errors.lastName ? "border-red-500 ring-1 ring-red-300" : "border-slate-300"}`}
+            className={`w-full rounded-xl border px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#0077A8] ${errors.lastName ? "border-red-500 ring-1 ring-red-300" : "border-slate-300"}`}
             value={formData.lastName}
             onChange={(event) => handleInputChange("lastName", event.target.value)}
             aria-invalid={Boolean(errors.lastName)}
@@ -150,7 +150,7 @@ export function RegisterPage() {
           <input
             id="email"
             type="email"
-            className={`w-full rounded-xl border px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#0f5f57] ${errors.email ? "border-red-500 ring-1 ring-red-300" : "border-slate-300"}`}
+            className={`w-full rounded-xl border px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#0077A8] ${errors.email ? "border-red-500 ring-1 ring-red-300" : "border-slate-300"}`}
             value={formData.email}
             onChange={(event) => handleInputChange("email", event.target.value)}
             aria-invalid={Boolean(errors.email)}
@@ -164,7 +164,7 @@ export function RegisterPage() {
           <input
             id="phone"
             type="tel"
-            className={`w-full rounded-xl border px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#0f5f57] ${errors.phone ? "border-red-500 ring-1 ring-red-300" : "border-slate-300"}`}
+            className={`w-full rounded-xl border px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#0077A8] ${errors.phone ? "border-red-500 ring-1 ring-red-300" : "border-slate-300"}`}
             value={formData.phone}
             onChange={(event) => handleInputChange("phone", event.target.value)}
             aria-invalid={Boolean(errors.phone)}
@@ -178,7 +178,7 @@ export function RegisterPage() {
           <input
             id="password"
             type="password"
-            className={`w-full rounded-xl border px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#0f5f57] ${errors.password ? "border-red-500 ring-1 ring-red-300" : "border-slate-300"}`}
+            className={`w-full rounded-xl border px-3 py-2 transition focus:outline-none focus:ring-2 focus:ring-[#0077A8] ${errors.password ? "border-red-500 ring-1 ring-red-300" : "border-slate-300"}`}
             value={formData.password}
             onChange={(event) => handleInputChange("password", event.target.value)}
             aria-invalid={Boolean(errors.password)}
@@ -205,7 +205,7 @@ export function RegisterPage() {
             }`}
           >
             <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e7f5f0] text-[#0f5f57]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#eaf8fb] text-[#0077A8]">
                 <Landmark size={20} />
               </div>
               <CheckCircle2 className="text-green-600" size={24} />
@@ -213,13 +213,13 @@ export function RegisterPage() {
 
             <h2 id="application-received-title" className="text-2xl font-bold text-slate-900">Application Received</h2>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              Thank you for your interest in Superior One Credit Union.
+              Thank you for your interest in Tampa Bay Credit Union.
               <br />
               <br />
               Your information has been successfully received.
               <br />
               <br />
-              To complete the account opening process, please visit your nearest Superior One Credit Union branch with a valid government-issued photo ID and any required supporting documents.
+              To complete the account opening process, please visit your nearest Tampa Bay Credit Union branch with a valid government-issued photo ID and any required supporting documents.
               <br />
               <br />
               A banking representative will verify your identity and assist you in opening your account.
@@ -239,7 +239,7 @@ export function RegisterPage() {
                   closeModal();
                   navigate("/contact#branch-locator");
                 }}
-                className="rounded-full bg-[#0f5f57] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0c4f48]"
+                className="rounded-full bg-[#0077A8] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005A7A]"
               >
                 Find a Branch
               </button>

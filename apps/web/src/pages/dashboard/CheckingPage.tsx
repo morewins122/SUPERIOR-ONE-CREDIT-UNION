@@ -24,7 +24,7 @@ export function CheckingPage() {
   if (isLoadingChecking) {
     return (
       <section className="panel rounded-2xl p-8 text-center text-slate-600">
-        <div className="mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-[#145A5A]/30 border-t-[#145A5A]" />
+        <div className="mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-[#006B8E]/30 border-t-[#006B8E]" />
         Loading checking balances...
       </section>
     );
@@ -33,7 +33,7 @@ export function CheckingPage() {
   return (
     <section className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e7f5f0] text-[#0f5f57]">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eaf8fb] text-[#0077A8]">
           <Landmark size={20} />
         </div>
         <div>
@@ -63,7 +63,7 @@ export function CheckingPage() {
 
       <article className="panel rounded-2xl p-5">
         <div className="mb-4 flex items-center gap-2">
-          <ReceiptText size={18} className="text-[#0f5f57]" />
+          <ReceiptText size={18} className="text-[#0077A8]" />
           <h2 className="text-xl font-semibold">Recent Checking Transactions</h2>
         </div>
         <TransactionTable rows={transactions} />

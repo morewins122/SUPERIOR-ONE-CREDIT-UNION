@@ -31,6 +31,7 @@ type TransferPayload = {
   accountId?: string;
   amount?: number;
   description?: string;
+  status?: Transaction["status"];
 };
 
 interface DemoApi {
@@ -379,7 +380,7 @@ export const api: DemoApi = {
         createdAt: new Date().toISOString(),
         category: "Transfer",
         status: "Completed",
-        merchant: "Superior One Credit Union"
+        merchant: "Tampa Bay Credit Union"
       });
 
       return response({ success: true } as T);
@@ -415,8 +416,8 @@ export const api: DemoApi = {
         description: payload.description || "Withdrawal",
         createdAt: new Date().toISOString(),
         category: "Transfer",
-        status: "Completed",
-        merchant: "Superior One Credit Union"
+        status: payload.status || "Completed",
+        merchant: "Tampa Bay Credit Union"
       });
 
       return response({ success: true } as T);
@@ -448,7 +449,7 @@ export const api: DemoApi = {
         createdAt: now,
         category: "Transfer",
         status: "Completed",
-        merchant: "Superior One Transfer"
+        merchant: "Tampa Bay Credit Union Transfer"
       });
 
       addTransaction({
@@ -463,7 +464,7 @@ export const api: DemoApi = {
         createdAt: now,
         category: "Transfer",
         status: "Completed",
-        merchant: "Superior One Transfer"
+        merchant: "Tampa Bay Credit Union Transfer"
       });
 
       return response({ success: true } as T);

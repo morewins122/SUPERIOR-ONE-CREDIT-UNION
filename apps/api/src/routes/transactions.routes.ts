@@ -145,7 +145,7 @@ transactionRouter.get("/export/pdf", async (req: AuthRequest, res) => {
   res.setHeader("Content-Disposition", "attachment; filename=statement.pdf");
 
   doc.pipe(res);
-  doc.fontSize(16).text("Superior One Credit Union - Account Statement");
+  doc.fontSize(16).text("Tampa Bay Credit Union - Account Statement");
   doc.moveDown();
 
   normalizeTransactionHistory(transactions).forEach((tx) => {

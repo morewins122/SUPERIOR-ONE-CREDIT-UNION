@@ -64,7 +64,7 @@ function App() {
             <Route index element={<DashboardHomePage />} />
             <Route path="checking" element={<CheckingPage />} />
             <Route path="savings" element={<SavingsDashboardPage />} />
-            <Route path="pay-transfer" element={<PayTransferPage />} />
+            <Route path="pay-transfer/*" element={<PayTransferPage />} />
             <Route path="manage-payees" element={<ManagePayeesPage />} />
             <Route path="transactions" element={<TransactionsPage />} />
             <Route path="statements" element={<StatementsPage />} />

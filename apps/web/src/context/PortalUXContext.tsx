@@ -22,6 +22,8 @@ type PortalUXContextValue = {
   pageTitle: string;
   showLoader: (message?: string) => void;
   hideLoader: () => void;
+  showLogoPreloader: () => void;
+  hideLogoPreloader: () => void;
   showSkeleton: (variant?: SkeletonVariant) => void;
   hideSkeleton: () => void;
   showToast: (message: string, type?: ToastType) => void;
@@ -83,12 +85,13 @@ export function PortalUXProvider({ children }: { children: ReactNode }) {
   const [isContentVisible, setIsContentVisible] = useState(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [pageTitle, setPageTitle] = useState(getRouteTitle(location.pathname));
+  const [logoPreloaderVisible, setLogoPreloaderVisible] = useState(false);
   const toastIdRef = useRef(1);
 
   useEffect(() => {
     const title = getRouteTitle(location.pathname);
     setPageTitle(title);
-    document.title = `${title} | Superior One Credit Union`;
+    document.title = `${title} | Tampa Bay Credit Union`;
   }, [location.pathname]);
 
   const showLoader = useCallback((message = "Loading...") => {
@@ -99,6 +102,14 @@ export function PortalUXProvider({ children }: { children: ReactNode }) {
   const hideLoader = useCallback(() => {
     setIsLoading(false);
     setProgress(0);
+  }, []);
+
+  const showLogoPreloader = useCallback(() => {
+    setLogoPreloaderVisible(true);
+  }, []);
+
+  const hideLogoPreloader = useCallback(() => {
+    setLogoPreloaderVisible(false);
   }, []);
 
   const showSkeleton = useCallback((variant: SkeletonVariant = "generic") => {
@@ -172,13 +183,49 @@ export function PortalUXProvider({ children }: { children: ReactNode }) {
       pageTitle,
       showLoader,
       hideLoader,
+      showLogoPreloader,
+      hideLogoPreloader,
       showSkeleton,
       hideSkeleton,
       showToast,
       navigatePage
     }),
-    [hideLoader, hideSkeleton, isContentVisible, isLoading, loadingMessage, navigatePage, pageTitle, progress, showLoader, showSkeleton, showToast, skeleton]
+    [hideLoader, hideSkeleton, isContentVisible, isLoading, loadingMessage, navigatePage, pageTitle, progress, showLoader, showLogoPreloader, hideLogoPreloader, showSkeleton, showToast, skeleton]
   );
+
+  useEffect(() => {
+    const handleButtonClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      const button = target?.closest("button") as HTMLButtonElement | null;
+      if (!button) {
+        return;
+      }
+
+      if (button.disabled || button.getAttribute("aria-busy") === "true") {
+        return;
+      }
+
+      const dashboardRoute = location.pathname.startsWith("/dashboard") || location.pathname.startsWith("/admin");
+      if (!dashboardRoute) {
+        return;
+      }
+
+      if (button.dataset.preloader !== "enabled") {
+        return;
+      }
+
+      showLogoPreloader();
+      window.setTimeout(() => {
+        hideLogoPreloader();
+      }, 7000);
+    };
+
+    document.addEventListener("click", handleButtonClick, true);
+
+    return () => {
+      document.removeEventListener("click", handleButtonClick, true);
+    };
+  }, [hideLogoPreloader, showLogoPreloader, location.pathname]);
 
   useEffect(() => {
     const handleInternalLinkClick = (event: MouseEvent) => {
@@ -225,7 +272,7 @@ export function PortalUXProvider({ children }: { children: ReactNode }) {
       />
 
       {isLoading ? (
-        <div className="pointer-events-none fixed right-4 top-5 z-[101] flex items-center gap-3 rounded-full bg-[#145A5A] px-4 py-2 text-sm font-medium text-white shadow-xl">
+        <div className="pointer-events-none fixed right-4 top-5 z-[101] flex items-center gap-3 rounded-full bg-[#006B8E] px-4 py-2 text-sm font-medium text-white shadow-xl">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
           <span>{loadingMessage}</span>
         </div>
@@ -236,7 +283,7 @@ export function PortalUXProvider({ children }: { children: ReactNode }) {
           <div
             key={toast.id}
             className={`animate-[fadeScale_0.24s_ease-out] rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-xl ${
-              toast.type === "success" ? "bg-emerald-600" : "bg-[#145A5A]"
+              toast.type === "success" ? "bg-emerald-600" : "bg-[#006B8E]"
             }`}
           >
             {toast.type === "success" ? "✓ " : "ℹ "}
@@ -244,6 +291,15 @@ export function PortalUXProvider({ children }: { children: ReactNode }) {
           </div>
         ))}
       </div>
+
+      {logoPreloaderVisible ? (
+        <div className="logo-preloader fixed inset-0 z-[120] flex items-center justify-center bg-transparent backdrop-blur-[1px]">
+          <div className="logo-preloader-card flex flex-col items-center justify-center rounded-[30px] border border-white/40 bg-white/30 px-8 py-7 shadow-2xl backdrop-blur-sm">
+            <img src="/front-page-logo.svg" alt="Tampa Bay Credit Union" className="logo-preloader-image h-28 w-28 rounded-full border border-[#0077A8]/15 bg-white object-contain p-2 shadow-sm animate-[logoBlink_900ms_ease-in-out_infinite]" />
+            <span className="logo-preloader-spinner mt-4 h-8 w-8 animate-spin rounded-full border-4 border-[#0077A8]/25 border-t-[#0077A8]" />
+          </div>
+        </div>
+      ) : null}
 
       {children}
     </PortalUXContext.Provider>

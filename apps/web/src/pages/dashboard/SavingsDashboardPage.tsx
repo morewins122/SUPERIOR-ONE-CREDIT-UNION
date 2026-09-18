@@ -33,7 +33,7 @@ export function SavingsDashboardPage() {
   return (
     <section className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e7f5f0] text-[#0f5f57]">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eaf8fb] text-[#0077A8]">
           <PiggyBank size={20} />
         </div>
         <div>
@@ -59,7 +59,7 @@ export function SavingsDashboardPage() {
           <p className="text-xs uppercase tracking-wide text-slate-500">Savings Goal</p>
           <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-slate-100">{state.savings.goalName}</p>
           <div className="mt-3 h-3 rounded-full bg-slate-200 dark:bg-slate-800">
-            <div className="h-3 rounded-full bg-[#0f5f57]" style={{ width: `${state.savings.goalProgress}%` }} />
+            <div className="h-3 rounded-full bg-[#0077A8]" style={{ width: `${state.savings.goalProgress}%` }} />
           </div>
           <p className="mt-2 text-sm text-slate-500">{state.savings.goalProgress}% complete</p>
         </article>

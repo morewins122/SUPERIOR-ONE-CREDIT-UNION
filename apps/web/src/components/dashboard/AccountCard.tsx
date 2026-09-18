@@ -22,7 +22,7 @@ export function AccountCard({ account }: { account: Account }) {
     <article className="panel bank-hover-lift flex h-full flex-col justify-between overflow-hidden rounded-[28px] p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#145A5A]">{accountTypeLabel}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#006B8E]">{accountTypeLabel}</p>
           <h4 className="text-xl font-bold tracking-tight text-slate-900">{accountName}</h4>
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Account</p>
@@ -30,7 +30,7 @@ export function AccountCard({ account }: { account: Account }) {
           </div>
         </div>
 
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#edf8f7] text-[#145A5A]">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#eefbfe] text-[#006B8E]">
           <i className={accountIcon} aria-hidden="true" />
         </span>
       </div>

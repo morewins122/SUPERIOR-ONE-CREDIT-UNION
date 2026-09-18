@@ -48,10 +48,10 @@ export function AccountSummaryCard({ account }: { account: Account }) {
       <div className="flex h-full flex-col">
         <div className="flex items-start justify-between gap-3 sm:gap-4">
           <div>
-            <p className="text-sm font-semibold tracking-[0.14em] text-[#0D5C63]">{meta.label}</p>
+            <p className="text-sm font-semibold tracking-[0.14em] text-[#005B80]">{meta.label}</p>
             <h3 className="mt-2 text-[1.4rem] font-bold leading-tight text-[#1E293B] sm:mt-3 sm:text-[1.875rem]">{meta.name}</h3>
           </div>
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#E8F5F4] text-[#0D5C63]">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#eaf8fb] text-[#005B80]">
             <i className={meta.iconClass} aria-hidden="true" />
           </span>
         </div>

@@ -1,28 +1,91 @@
-<svg width="1200" height="760" viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">One Credit Union Logo</title>
-  <desc id="desc">Stylized number one with green ring and One Credit Union text.</desc>
+<svg width="900" height="900" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Tampa Bay Credit Union Logo</title>
+  <desc id="desc">A Tampa Bay Credit Union logo featuring a shield, columns, water and bay skyline.</desc>
 
   <defs>
-    <linearGradient id="pillarGradient" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#2AA160"/>
-      <stop offset="100%" stop-color="#0E5C4D"/>
+    <linearGradient id="deepBlue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071d36" />
+      <stop offset="1" stop-color="#0d496d" />
     </linearGradient>
-    <linearGradient id="baseGradient" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1F9788"/>
-      <stop offset="100%" stop-color="#2B8D72"/>
+    <linearGradient id="blueHat" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#143d66" />
+      <stop offset="1" stop-color="#091b32" />
     </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#005c7a" />
+      <stop offset="1" stop-color="#072d4c" />
+    </linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="145%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#071a2c" flood-opacity="0.28" />
+    </filter>
   </defs>
 
-  <rect x="0" y="0" width="1200" height="760" fill="#FFFFFF"/>
+  <rect width="900" height="900" fill="#ffffff" />
 
-  <g transform="translate(0,-10)">
-    <rect x="504" y="115" width="152" height="340" fill="url(#pillarGradient)"/>
-    <polygon points="504,170 592,95 656,95 656,170 592,170 504,250" fill="#0E5C4D"/>
-    <polygon points="592,170 656,170 656,455 592,455" fill="#154D42"/>
+  <g filter="url(#shadow)">
+    <!-- Outer shield background -->
+    <path d="M450 35 C590 80 665 105 710 120 L710 390 C710 625 620 740 450 820 C280 740 190 625 190 390 L190 120 C240 105 310 80 450 35 Z" fill="url(#deepBlue)" stroke="#d1a85d" stroke-width="5" />
 
-    <ellipse cx="600" cy="350" rx="184" ry="92" fill="none" stroke="#2AA160" stroke-width="56"/>
-    <rect x="504" y="480" width="224" height="76" fill="url(#baseGradient)"/>
+    <!-- Inner shield white field -->
+    <path d="M450 78 C570 118 630 125 660 135 L660 385 C660 590 590 690 450 760 C310 690 240 590 240 385 L240 135 C290 125 350 118 450 78 Z" fill="#fffdfb" stroke="#d1a85d" stroke-width="3" />
+
+    <!-- Gold top border -->
+    <path d="M250 130 L650 130" stroke="#cfad78" stroke-width="4" />
+
+    <!-- Sun rays -->
+    <g opacity="0.95">
+      <path d="M450 155 L450 195" stroke="#cfad78" stroke-width="4" />
+      <path d="M420 156 L412 185" stroke="#cfad78" stroke-width="3" />
+      <path d="M390 160 L380 190" stroke="#cfad78" stroke-width="3" />
+      <path d="M370 168 L362 205" stroke="#cfad78" stroke-width="3" />
+      <path d="M480 156 L490 185" stroke="#cfad78" stroke-width="3" />
+      <path d="M510 160 L524 190" stroke="#cfad78" stroke-width="3" />
+      <path d="M530 175 L555 205" stroke="#cfad78" stroke-width="3" />
+      <path d="M450 150 C430 175 420 160 450 170" fill="none" stroke="#cfad78" stroke-width="3" />
+      <circle cx="450" cy="205" r="50" fill="#d19f3d" stroke="#cfad78" stroke-width="3" />
+    </g>
+
+    <!-- Top crown / shield highlight -->
+    <path d="M260 140 C280 180 317 205 340 210" fill="none" stroke="#cfad78" stroke-width="5" />
+    <path d="M640 140 C620 180 590 205 570 210" fill="none" stroke="#cfad78" stroke-width="5" />
+
+    <!-- Columns -->
+    <g>
+      <!-- left columns -->
+      <rect x="300" y="215" width="28" height="150" fill="#062a56" stroke="#e9c88f" stroke-width="2" />
+      <rect x="340" y="215" width="28" height="150" fill="#062a56" stroke="#e9c88f" stroke-width="2" />
+      <rect x="380" y="215" width="28" height="150" fill="#062a56" stroke="#e9c88f" stroke-width="2" />
+
+      <!-- center columns -->
+      <rect x="415" y="215" width="30" height="150" fill="#062a56" stroke="#e9c88f" stroke-width="2" />
+      <rect x="455" y="215" width="30" height="150" fill="#062a56" stroke="#e9c88f" stroke-width="2" />
+      <rect x="495" y="215" width="30" height="150" fill="#062a56" stroke="#e9c88f" stroke-width="2" />
+
+      <!-- right columns -->
+      <rect x="530" y="215" width="28" height="150" fill="#062a56" stroke="#e9c88f" stroke-width="2" />
+      <rect x="570" y="215" width="28" height="150" fill="#062a56" stroke="#e9c88f" stroke-width="2" />
+
+      <!-- roof line -->
+      <path d="M270 210 L630 210" stroke="#e2b56c" stroke-width="4" />
+      <path d="M270 210 L295 195 L325 210" fill="#e2b56c" />
+      <path d="M360 210 L390 195 L420 210" fill="#e2b56c" />
+      <path d="M455 210 L480 197 L510 210" fill="#e2b56c" />
+      <path d="M545 210 L570 196 L600 210" fill="#e2b56c" />
+    </g>
+
+    <!-- water waves -->
+    <g>
+      <path d="M235 420 C270 438 265 450 315 438 C350 438 360 443 385 440 C425 445 440 430 455 434 C490 440 490 440 500 432 C540 440 555 440 580 445 C607 445 620 435 630 432 C645 442 653 442 680 435 L680 465 C650 465 620 467 600 464 C575 465 555 464 530 460 C510 455 500 458 485 460 C455 465 440 455 420 460 C395 462 390 458 370 460 C350 461 342 460 315 460 C298 460 275 456 250 453 Z" fill="url(#sea)" />
+      <path d="M250 465 C277 480 287 476 310 474 C338 470 350 472 362 474 C383 480 392 475 404 472 C420 470 432 471 445 472 C466 474 480 470 492 469 C515 474 525 474 548 472 C575 470 590 474 606 472 C620 472 630 474 635 468 C645 474 650 476 660 474 L665 500 C632 502 615 497 588 500 C565 500 550 498 530 500 C505 504 480 496 458 498 C430 498 420 500 395 498 C380 498 366 498 350 498 C335 496 326 494 310 496 C285 496 265 500 250 492 Z" fill="#051927" opacity="0.7" />
+    </g>
+
+    <!-- inner edge -->
+    <path d="M250 650 C330 665 380 618 450 660 C540 665 610 650 660 642" fill="none" stroke="#cfad78" stroke-width="3" />
   </g>
 
-  <text x="600" y="695" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="94" font-weight="700" fill="#0E5C4D">One Credit Union</text>
+  <!-- Wordmark below the shield -->
+  <text x="450" y="840" font-family="Segoe UI, Arial, sans-serif" font-size="72" font-weight="700" fill="#0c315b" text-anchor="middle">TAMPA BAY</text>
+  <line x1="230" y1="862" x2="670" y2="862" stroke="#cfad78" stroke-width="2" />
+  <text x="450" y="890" font-family="Segoe UI, Arial, sans-serif" font-size="36" font-weight="500" fill="#0c315b" text-anchor="middle" letter-spacing="4">CREDIT UNION</text>
 </svg>
+

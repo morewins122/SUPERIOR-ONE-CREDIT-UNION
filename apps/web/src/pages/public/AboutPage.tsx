@@ -3,10 +3,10 @@ export function AboutPage() {
     <section className="space-y-8">
       <article className="panel rounded-[24px] p-6 sm:p-8">
         <div className="max-w-4xl space-y-4">
-          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#0D5C63]">Privacy Policy</p>
-          <h1 className="text-[clamp(2rem,4vw,3rem)] font-extrabold tracking-tight text-slate-900">Superior One Credit Union Privacy Policy</h1>
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#005B80]">Privacy Policy</p>
+          <h1 className="text-[clamp(2rem,4vw,3rem)] font-extrabold tracking-tight text-slate-900">Tampa Bay Credit Union Privacy Policy</h1>
           <p className="text-base leading-7 text-slate-600">
-            Superior One Credit Union is committed to protecting the privacy and security of our members’ personal and financial information.
+            Tampa Bay Credit Union is committed to protecting the privacy and security of our members’ personal and financial information.
             This Privacy Policy explains how we collect, use, disclose, and safeguard information when you access our website, mobile services,
             and online banking tools.
           </p>
@@ -73,7 +73,7 @@ export function AboutPage() {
           If you have questions about this Privacy Policy or how your information is handled, please contact Member Services through the
           secure contact channels provided on our website.
         </p>
-        <p className="mt-4 text-sm font-semibold tracking-[0.08em] text-[#0D5C63]">Superior One Credit Union</p>
+        <p className="mt-4 text-sm font-semibold tracking-[0.08em] text-[#005B80]">Tampa Bay Credit Union</p>
       </article>
     </section>
   );

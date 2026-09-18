@@ -40,7 +40,7 @@ async function main() {
     data: {
       firstName: "Admin",
       lastName: "User",
-      email: "admin@superioronecu.com",
+      email: "admin@tampabaycreditunion.com",
       phone: "555-000-0000",
       passwordHash: adminHash,
       role: Role.ADMIN,
@@ -163,7 +163,7 @@ async function main() {
         data: [
           {
             userId: user.id,
-            title: "Welcome to Superior One",
+            title: "Welcome to Tampa Bay Credit Union",
             message: "Your account is ready. Explore your digital banking services.",
             isRead: faker.datatype.boolean()
           },

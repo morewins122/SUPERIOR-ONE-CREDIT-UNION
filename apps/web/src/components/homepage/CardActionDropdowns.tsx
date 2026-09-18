@@ -47,14 +47,14 @@ export function CardActionDropdowns() {
             <div key={menu.accountType} className="flex h-full flex-col">
               <button
                 type="button"
-                className={`flex min-h-24 w-full items-center justify-between rounded-2xl bg-gradient-to-br ${menu.accent} px-4 py-4 text-left text-white shadow-lg ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#0f5f57]`}
+                className={`flex min-h-24 w-full items-center justify-between rounded-2xl bg-gradient-to-br ${menu.accent} px-4 py-4 text-left text-white shadow-lg ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#0077A8]`}
                 aria-expanded={isOpen}
                 aria-controls={panelId}
                 onClick={() => setOpenAccountType((value) => (value === menu.accountType ? null : menu.accountType))}
                 onFocus={() => setOpenAccountType(menu.accountType)}
               >
                 <span className="pr-3">
-                  <span className="block text-xs uppercase tracking-[0.18em] text-white/70">Superior One</span>
+                  <span className="block text-xs uppercase tracking-[0.18em] text-white/70">Tampa Bay Credit Union</span>
                   <span className="mt-1 block text-lg font-semibold leading-tight">{menu.title}</span>
                   <span className="mt-1 block text-sm text-white/75">{menu.subtitle}</span>
                 </span>
@@ -77,10 +77,10 @@ export function CardActionDropdowns() {
                       <li key={action.label}>
                         <button
                           type="button"
-                          className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-700 transition hover:bg-[#e7f5f0] hover:text-[#0f5f57] focus:outline-none focus:ring-2 focus:ring-[#0f5f57] dark:text-slate-200 dark:hover:bg-slate-900"
+                          className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-slate-700 transition hover:bg-[#eaf8fb] hover:text-[#0077A8] focus:outline-none focus:ring-2 focus:ring-[#0077A8] dark:text-slate-200 dark:hover:bg-slate-900"
                           onClick={() => handleSavingsAction(menu.accountType, action.label)}
                         >
-                          <i aria-hidden="true" className={`${action.iconClass} w-4 text-center text-[#0f5f57]`} />
+                          <i aria-hidden="true" className={`${action.iconClass} w-4 text-center text-[#0077A8]`} />
                           <span className="leading-5">{action.label}</span>
                         </button>
                       </li>

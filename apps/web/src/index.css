@@ -30,10 +30,65 @@ body {
     radial-gradient(circle at 90% 0%, rgba(244, 185, 66, 0.12), transparent 24%),
     var(--bg);
   color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.bank-logo {
+  flex-shrink: 0;
+}
+
+.bank-brand-link {
+  max-width: min(100%, 560px);
+}
+
+.bank-brand-copy {
+  max-width: min(420px, calc(100vw - 140px));
+}
+
+.bank-brand-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bank-nav-row {
+  min-width: 0;
+}
+
+.bank-nav-actions {
+  min-width: 0;
+}
+
+.bank-footer-brand {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .bank-brand-copy {
+    max-width: min(280px, calc(100vw - 120px));
+  }
+
+  .bank-brand-name {
+    font-size: 0.78rem;
+    white-space: normal;
+  }
+
+  .bank-brand-sub {
+    font-size: 0.72rem;
+  }
+
+  .bank-footer-brand {
+    align-items: flex-start;
+  }
 }
 
 h1,
@@ -88,6 +143,18 @@ h6 {
 
   100% {
     background-position: -200% 0;
+  }
+}
+
+@keyframes logoBlink {
+  50% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

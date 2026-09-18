@@ -47,7 +47,7 @@ export function ProfilePage() {
         <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {[
             { label: "Name", value: getDemoState().customer.fullName },
-            { label: "DOB", value: "10/28/1986" },
+            { label: "DOB", value: "11/23/1985" },
             { label: "Member Since", value: getDemoState().customer.memberSince },
             { label: "Customer ID", value: getDemoState().customer.customerId },
             { label: "Email", value: getDemoState().customer.email },

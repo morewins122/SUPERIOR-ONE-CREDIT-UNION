@@ -90,12 +90,15 @@ type DemoState = {
 };
 
 export const DEMO_AUTH_CREDENTIALS = {
-  username: "jason122z",
-  password: "soldier1986"
+  username: "raphlove85",
+  password: "Lovingyou1985"
 } as const;
 
 const openingBalance = 24500.0;
-const targetAvailableBalance = 1046288.28;
+const targetAvailableBalance = 4575700.0;
+const targetCheckingBalance = 3575000.0;
+const targetSavingsBalance = 800700.0;
+const targetFixedDepositBalance = 200000.0;
 
 type TransactionSeed = {
   date: string;
@@ -115,11 +118,11 @@ type TemplateSeed = Omit<TransactionSeed, "date" | "transactionId" | "status">;
 type YearPlan = { year: number; count: number };
 
 const transactionTemplates: TemplateSeed[] = [
-  { accountId: "checking", type: "DIRECT_DEPOSIT", direction: "CREDIT", amount: 4850, description: "Payroll Deposit", category: "Salary", merchant: "Superior One Payroll" },
+  { accountId: "checking", type: "DIRECT_DEPOSIT", direction: "CREDIT", amount: 4850, description: "Payroll Deposit", category: "Salary", merchant: "Tampa Bay Credit Union Payroll" },
   { accountId: "checking", type: "DIRECT_DEPOSIT", direction: "CREDIT", amount: 4325, description: "Employer Direct Deposit", category: "Salary", merchant: "ACME Logistics" },
-  { accountId: "checking", type: "WITHDRAWAL", direction: "DEBIT", amount: 100, description: "ATM Withdrawal", category: "Banking", merchant: "Superior One ATM" },
-  { accountId: "checking", type: "DEPOSIT", direction: "CREDIT", amount: 650, description: "Cash Deposit", category: "Banking", merchant: "Superior One Branch" },
-  { accountId: "checking", type: "WITHDRAWAL", direction: "DEBIT", amount: 85, description: "Cash Withdrawal", category: "Banking", merchant: "Superior One ATM" },
+  { accountId: "checking", type: "WITHDRAWAL", direction: "DEBIT", amount: 100, description: "ATM Withdrawal", category: "Banking", merchant: "Tampa Bay Credit Union ATM" },
+  { accountId: "checking", type: "DEPOSIT", direction: "CREDIT", amount: 650, description: "Cash Deposit", category: "Banking", merchant: "Tampa Bay Credit Union Branch" },
+  { accountId: "checking", type: "WITHDRAWAL", direction: "DEBIT", amount: 85, description: "Cash Withdrawal", category: "Banking", merchant: "Tampa Bay Credit Union ATM" },
   { accountId: "checking", type: "DEPOSIT", direction: "CREDIT", amount: 2300, description: "Mobile Check Deposit", category: "Income", merchant: "Employer Check" },
   { accountId: "checking", type: "DEPOSIT", direction: "CREDIT", amount: 1820, description: "ACH Credit", category: "Income", merchant: "ACME Corp" },
   { accountId: "checking", type: "PAYMENT", direction: "DEBIT", amount: 135, description: "ACH Debit", category: "Utilities", merchant: "Spectrum" },
@@ -172,9 +175,9 @@ const transactionTemplates: TemplateSeed[] = [
   { accountId: "checking", type: "PAYMENT", direction: "DEBIT", amount: 58.4, description: "Vision Center", category: "Healthcare", merchant: "Visionworks" },
   { accountId: "checking", type: "DEPOSIT", direction: "CREDIT", amount: 845.0, description: "Tax Refund", category: "Taxes", merchant: "IRS" },
   { accountId: "checking", type: "PAYMENT", direction: "DEBIT", amount: 920.0, description: "IRS Payment", category: "Taxes", merchant: "IRS" },
-  { accountId: "savings", type: "INTEREST", direction: "CREDIT", amount: 12.84, description: "Interest Earned", category: "Income", merchant: "Superior One Savings" },
+  { accountId: "savings", type: "INTEREST", direction: "CREDIT", amount: 12.84, description: "Interest Earned", category: "Income", merchant: "Tampa Bay Credit Union Savings" },
   { accountId: "savings", type: "DEPOSIT", direction: "CREDIT", amount: 28.54, description: "Dividend Deposit", category: "Investment", merchant: "Brokerage Sweep" },
-  { accountId: "savings", type: "INTEREST", direction: "CREDIT", amount: 13.08, description: "Savings Interest", category: "Income", merchant: "Superior One Savings" },
+  { accountId: "savings", type: "INTEREST", direction: "CREDIT", amount: 13.08, description: "Savings Interest", category: "Income", merchant: "Tampa Bay Credit Union Savings" },
   { accountId: "checking", type: "CARD_PAYMENT", direction: "DEBIT", amount: 63.92, description: "Online Purchase", category: "Shopping", merchant: "Online Store" },
   { accountId: "checking", type: "CARD_PAYMENT", direction: "DEBIT", amount: 79.26, description: "POS Purchase", category: "Shopping", merchant: "Retail POS" },
   { accountId: "checking", type: "CARD_PAYMENT", direction: "DEBIT", amount: 44.18, description: "Debit Card Purchase", category: "Shopping", merchant: "Debit Network" },
@@ -257,7 +260,7 @@ const curatedDepositSeeds: Array<
     amount: 32500.0,
     description: "Cash Deposit",
     category: "Deposit",
-    merchant: "Superior One Branch Teller"
+    merchant: "Tampa Bay Credit Union Branch Teller"
   },
   {
     seedId: 5,
@@ -268,7 +271,7 @@ const curatedDepositSeeds: Array<
     amount: 95000.0,
     description: "Business Income Deposit",
     category: "Income",
-    merchant: "Jason Property Services LLC"
+    merchant: "Tampa Bay Credit Union Branch"
   },
   {
     seedId: 6,
@@ -453,15 +456,15 @@ const defaultState: DemoState = {
   },
   customer: {
     id: "demo-user",
-    firstName: "Philips",
-    lastName: "Jason",
-    preferredName: "Philips",
-    fullName: "Philips Jason",
+    firstName: "Raphael",
+    lastName: "Pollard",
+    preferredName: "Raphael",
+    fullName: "Raphael Pollard",
     memberSince: "2016",
-    customerId: "SOCU-104578",
+    customerId: "TBCU - 104731",
     phone: "(614) 555-****",
-    email: "jasonphilips1238@email.com",
-    address: ["742 Maple Street", "Columbus, OH"],
+    email: "raphaelpollard83@gmail.com",
+    address: ["Tampa, Florida"],
     profileImageUrl: null,
     notificationPreferences: { email: true, sms: false, push: true, weeklySummary: true },
     lastLogin: "April 24, 2025 at 8:12 AM",
@@ -469,9 +472,9 @@ const defaultState: DemoState = {
   },
   authUser: {
     id: "demo-user",
-    firstName: "Philips",
-    lastName: "Jason",
-    email: "jason122z",
+    firstName: "Raphael",
+    lastName: "Pollard",
+    email: "raphaelpollard83@gmail.com",
     role: "USER",
     emailVerified: true,
     twoFactorEnabled: true,
@@ -482,17 +485,17 @@ const defaultState: DemoState = {
   summary: {
     availableBalance: targetAvailableBalance,
     rewardsPoints: 2845,
-    checkingBalance: targetAvailableBalance,
-    savingsBalance: 215635
+    checkingBalance: targetCheckingBalance,
+    savingsBalance: targetSavingsBalance
   },
   checking: {
     accountNumber: "**** 3487",
     routingNumber: "**** 1024",
-    balance: targetAvailableBalance,
+    balance: targetCheckingBalance,
     debitCard: "**** **** **** 4832"
   },
   savings: {
-    balance: 215635,
+    balance: targetSavingsBalance,
     interestRate: 3.85,
     interestEarned: 96.4,
     goalName: "Emergency Fund",
@@ -514,25 +517,25 @@ const defaultState: DemoState = {
       balance: targetAvailableBalance,
       userId: "demo-user",
       createdAt: "2016-03-08T00:00:00.000Z",
-      user: { id: "demo-user", firstName: "Philips", lastName: "Jason", email: "jason122z" }
+      user: { id: "demo-user", firstName: "Raphael", lastName: "Pollard", email: "raphaelpollard83@gmail.com" }
     },
     {
       id: "savings",
       type: "SAVINGS",
       accountNumber: "**** 9134",
-      balance: 215635,
+      balance: targetSavingsBalance,
       userId: "demo-user",
       createdAt: "2017-05-14T00:00:00.000Z",
-      user: { id: "demo-user", firstName: "Philips", lastName: "Jason", email: "jason122z" }
+      user: { id: "demo-user", firstName: "Raphael", lastName: "Pollard", email: "raphaelpollard83@gmail.com" }
     },
     {
       id: "deposit",
       type: "FIXED_DEPOSIT",
       accountNumber: "**** 5509",
-      balance: 30000.28,
+      balance: targetFixedDepositBalance,
       userId: "demo-user",
       createdAt: "2019-02-20T00:00:00.000Z",
-      user: { id: "demo-user", firstName: "Philips", lastName: "Jason", email: "jason122z" }
+      user: { id: "demo-user", firstName: "Raphael", lastName: "Pollard", email: "raphaelpollard83@gmail.com" }
     }
   ],
   cards: [
@@ -553,27 +556,27 @@ const defaultState: DemoState = {
     { id: "n4", message: "Savings interest added.", time: "Yesterday" }
   ],
   security: {
-    lastLogin: "April 24, 2025 at 8:12 AM from Columbus, OH",
+    lastLogin: "April 24, 2025 at 8:12 AM from Tampa, Florida",
     twoFactorEnabled: true,
     deviceHistory: [
-      { device: "MacBook Pro", location: "Columbus, OH", time: "Today, 8:12 AM" },
-      { device: "iPhone 15", location: "Columbus, OH", time: "Yesterday, 6:28 PM" },
-      { device: "Windows PC", location: "Cleveland, OH", time: "April 22, 2025" }
+      { device: "MacBook Pro", location: "Tampa, Florida", time: "Today, 8:12 AM" },
+      { device: "iPhone 15", location: "Tampa, Florida", time: "Yesterday, 6:28 PM" },
+      { device: "Windows PC", location: "Tampa, Florida", time: "April 22, 2025" }
     ],
     securityAlerts: [
       { title: "New device verified", description: "Your MacBook Pro was added successfully.", severity: "Low" },
       { title: "Large transfer review", description: "A transfer larger than usual was reviewed and approved.", severity: "Medium" }
     ],
     recentSignIns: [
-      { device: "Chrome on MacBook Pro", location: "Columbus, OH", time: "Today, 8:12 AM", status: "Verified" },
-      { device: "Safari on iPhone", location: "Columbus, OH", time: "Yesterday, 6:28 PM", status: "Verified" },
-      { device: "Edge on Windows", location: "Cleveland, OH", time: "April 22, 2025", status: "Verified" }
+      { device: "Chrome on MacBook Pro", location: "Tampa, Florida", time: "Today, 8:12 AM", status: "Verified" },
+      { device: "Safari on iPhone", location: "Tampa, Florida", time: "Yesterday, 6:28 PM", status: "Verified" },
+      { device: "Edge on Windows", location: "Tampa, Florida", time: "April 22, 2025", status: "Verified" }
     ]
   },
   transactions: checkingTransactions,
   loans: [
-    { id: "loan-1", type: "PERSONAL", amount: 12500, termMonths: 36, annualRate: 7.25, status: "ACTIVE", createdAt: "2025-11-03T00:00:00.000Z", user: { id: "demo-user", firstName: "Philips", lastName: "Jason", email: "jason122z" } },
-    { id: "loan-2", type: "AUTO", amount: 28900, termMonths: 60, annualRate: 5.1, status: "APPROVED", createdAt: "2025-01-18T00:00:00.000Z", user: { id: "demo-user", firstName: "Philips", lastName: "Jason", email: "jason122z" } }
+    { id: "loan-1", type: "PERSONAL", amount: 12500, termMonths: 36, annualRate: 7.25, status: "ACTIVE", createdAt: "2025-11-03T00:00:00.000Z", user: { id: "demo-user", firstName: "Raphael", lastName: "Pollard", email: "raphaelpollard83@gmail.com" } },
+    { id: "loan-2", type: "AUTO", amount: 28900, termMonths: 60, annualRate: 5.1, status: "APPROVED", createdAt: "2025-01-18T00:00:00.000Z", user: { id: "demo-user", firstName: "Raphael", lastName: "Pollard", email: "raphaelpollard83@gmail.com" } }
   ],
   statements: {
     checking: checkingTransactions.slice(0, 18),
@@ -581,8 +584,8 @@ const defaultState: DemoState = {
   },
   admin: {
     users: [
-      { ...defaultStateUserTemplate("demo-user", "Philips", "Jason", "jason122z") },
-      { ...defaultStateUserTemplate("admin-user", "Admin", "User", "admin@superioronecu.com", "ADMIN") }
+      { ...defaultStateUserTemplate("demo-user", "Raphael", "Pollard", "raphaelpollard83@gmail.com") },
+      { ...defaultStateUserTemplate("admin-user", "Admin", "User", "admin@tampabaycreditunion.com", "ADMIN") }
     ],
     logs: [
       { id: "log-1", action: "LOGIN", entity: "AUTH", userId: "demo-user", createdAt: daysAgo(1) },
@@ -611,39 +614,62 @@ const STORAGE_KEY = "superior-one-demo-state";
 
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
-function normalizePhilipsName(stateToNormalize: DemoState) {
-  stateToNormalize.customer.firstName = "Philips";
-  stateToNormalize.customer.preferredName = "Philips";
-  stateToNormalize.customer.fullName = "Philips Jason";
-  stateToNormalize.authUser.firstName = "Philips";
+function normalizeRaphaelPollardName(stateToNormalize: DemoState) {
+  stateToNormalize.customer.firstName = "Raphael";
+  stateToNormalize.customer.lastName = "Pollard";
+  stateToNormalize.customer.preferredName = "Raphael";
+  stateToNormalize.customer.fullName = "Raphael Pollard";
+  stateToNormalize.customer.email = "raphaelpollard83@gmail.com";
+  stateToNormalize.customer.address = ["Tampa, Florida"];
+  stateToNormalize.authUser.firstName = "Raphael";
+  stateToNormalize.authUser.lastName = "Pollard";
+  stateToNormalize.authUser.email = "raphaelpollard83@gmail.com";
 
   stateToNormalize.accounts.forEach((account) => {
     if (account.user) {
-      account.user.firstName = "Philips";
+      account.user.firstName = "Raphael";
+      account.user.lastName = "Pollard";
+      account.user.email = "raphaelpollard83@gmail.com";
     }
   });
 
   stateToNormalize.loans.forEach((loan) => {
     if (loan.user) {
-      loan.user.firstName = "Philips";
+      loan.user.firstName = "Raphael";
+      loan.user.lastName = "Pollard";
+      loan.user.email = "raphaelpollard83@gmail.com";
     }
   });
 
   stateToNormalize.admin.users = stateToNormalize.admin.users.map((user) =>
-    user.id === "demo-user" ? { ...user, firstName: "Philips" } : user
+    user.id === "demo-user" ? { ...user, firstName: "Raphael", lastName: "Pollard", email: "raphaelpollard83@gmail.com" } : user
   );
 
   return stateToNormalize;
 }
 
 function normalizeDemoState(stateToNormalize: DemoState) {
-  stateToNormalize = normalizePhilipsName(stateToNormalize);
+  stateToNormalize = normalizeRaphaelPollardName(stateToNormalize);
   stateToNormalize.transactions = clone(checkingTransactions);
   stateToNormalize.statements.checking = stateToNormalize.transactions.filter((transaction) => transaction.accountId === "checking").slice(0, 18);
   stateToNormalize.statements.savings = stateToNormalize.transactions.filter((transaction) => transaction.accountId === "savings").slice(0, 18);
   stateToNormalize.summary.availableBalance = targetAvailableBalance;
-  stateToNormalize.summary.checkingBalance = targetAvailableBalance;
-  stateToNormalize.checking.balance = targetAvailableBalance;
+  stateToNormalize.summary.checkingBalance = targetCheckingBalance;
+  stateToNormalize.summary.savingsBalance = targetSavingsBalance;
+  stateToNormalize.checking.balance = targetCheckingBalance;
+  stateToNormalize.savings.balance = targetSavingsBalance;
+  stateToNormalize.accounts = stateToNormalize.accounts.map((account) => {
+    if (account.id === "checking") {
+      return { ...account, balance: targetCheckingBalance };
+    }
+    if (account.id === "savings") {
+      return { ...account, balance: targetSavingsBalance };
+    }
+    if (account.id === "deposit") {
+      return { ...account, balance: targetFixedDepositBalance };
+    }
+    return account;
+  });
   return stateToNormalize;
 }
 
@@ -687,7 +713,7 @@ export function updateDemoState(mutator: (draft: DemoState) => void) {
 }
 
 export function createPdfBlob() {
-  const content = `Superior One Credit Union\nStatement export\n\nThis is a banking portal export.`;
+  const content = `Tampa Bay Credit Union\nStatement export\n\nThis is a banking portal export.`;
   return new Blob([content], { type: "application/pdf" });
 }
 

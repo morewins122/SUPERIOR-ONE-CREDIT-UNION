@@ -34,7 +34,7 @@ export function TransactionTable({ rows }: { rows: Transaction[] }) {
                 <Fragment key={tx.id}>
                   {showMonthLabel ? (
                     <tr key={`${tx.id}-month`}>
-                      <td colSpan={5} className="py-4 pr-3 pt-6 text-xs font-semibold uppercase tracking-[0.22em] text-[#145A5A]">
+                      <td colSpan={5} className="py-4 pr-3 pt-6 text-xs font-semibold uppercase tracking-[0.22em] text-[#006B8E]">
                         {monthLabel}
                       </td>
                     </tr>
@@ -61,7 +61,7 @@ export function TransactionTable({ rows }: { rows: Transaction[] }) {
                             ? "bg-amber-100 text-amber-800"
                             : tx.status === "Processing"
                               ? "bg-blue-100 text-blue-800"
-                              : "bg-[#e7f5f0] text-[#0f5c57]"
+                              : "bg-[#eaf8fb] text-[#0f5c57]"
                         }`}
                       >
                         {tx.status ?? "Completed"}

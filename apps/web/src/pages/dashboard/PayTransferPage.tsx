@@ -3,8 +3,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { api } from "@/lib/api";
-import type { Account } from "@/types";
+import type { Account, Transaction } from "@/types";
 import { getDemoState } from "@/data/bankDemoData";
 import { usePortalUX } from "@/context/PortalUXContext";
 
@@ -27,6 +28,14 @@ type RecentPayeeRow = {
   note: string;
 };
 
+type RecentTransaction = {
+  recipient: string;
+  amount: string;
+  note: string;
+  date: string;
+  status: string;
+};
+
 type PendingTransferDetails = {
   formValues: TransferForm;
   payload: TransferForm & { toAccountId: string; description: string };
@@ -35,15 +44,20 @@ type PendingTransferDetails = {
 type ProcessingStage = "idle" | "processing";
 
 const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
+const transferLimit = 10;
+const initialTransferCount = 5;
 
 export function PayTransferPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [billUnavailablePromptOpen, setBillUnavailablePromptOpen] = useState(false);
   const [transferConfirmOpen, setTransferConfirmOpen] = useState(false);
+  const [transferSuccessPromptOpen, setTransferSuccessPromptOpen] = useState(false);
+  const [limitReachedPromptOpen, setLimitReachedPromptOpen] = useState(false);
   const [transferFailedPromptOpen, setTransferFailedPromptOpen] = useState(false);
   const [pendingTransfer, setPendingTransfer] = useState<PendingTransferDetails | null>(null);
+  const [recentTransactions, setRecentTransactions] = useState<RecentTransaction[]>([]);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
-  const [activeTab, setActiveTab] = useState<ActiveTab>("bill");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("send");
   const [isTransferring, setIsTransferring] = useState(false);
   const [isPayingBill, setIsPayingBill] = useState(false);
   const [billPayee, setBillPayee] = useState("");
@@ -64,6 +78,16 @@ export function PayTransferPage() {
     sending: false,
     balance: false
   });
+  const [destinationMenuOpen, setDestinationMenuOpen] = useState(false);
+  const [destinationAccount, setDestinationAccount] = useState("");
+  const [destinationAccountSelected, setDestinationAccountSelected] = useState(false);
+  const [transferAmount, setTransferAmount] = useState("250");
+  const [transferNote, setTransferNote] = useState("");
+  const [transferCount, setTransferCount] = useState(initialTransferCount);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const selectedDestinationFromQuery = new URLSearchParams(location.search).get("recipient") ?? "";
+  const isTransferAmountStep = location.pathname.endsWith("/amount") || Boolean(selectedDestinationFromQuery);
   const { navigatePage } = usePortalUX();
   const { register, handleSubmit } = useForm<TransferForm>({
     resolver: zodResolver(transferSchema),
@@ -71,13 +95,38 @@ export function PayTransferPage() {
   });
 
   useEffect(() => {
+    if (selectedDestinationFromQuery) {
+      setDestinationAccount(selectedDestinationFromQuery);
+      setRecipientName(selectedDestinationFromQuery);
+      setDestinationAccountSelected(true);
+    } else {
+      setDestinationAccountSelected(false);
+    }
+  }, [selectedDestinationFromQuery]);
+
+  useEffect(() => {
     void (async () => {
       setIsBootstrapping(true);
       const { data } = await api.get<Account[]>("/accounts");
       setAccounts(data);
+      if (location.pathname.endsWith("/amount")) {
+        const { data: transactions } = await api.get<Transaction[]>("/transactions");
+        const farmTransactions = transactions
+          .filter((transaction) => transaction.direction === "DEBIT" && transaction.description?.includes("Celestia Valley Farms"))
+          .map((transaction) => ({
+            recipient: "Celestia Valley Farms",
+            amount: `-${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(transaction.amount)}`,
+            note: transaction.description?.replace("Transfer to Celestia Valley Farms", "").replace(/^\s*-\s*/, "") || "External",
+            date: new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date(transaction.createdAt)),
+            status: transaction.status === "Completed" ? "Sent" : transaction.status || "Pending"
+          }));
+        if (farmTransactions.length > 0) {
+          setRecentTransactions((current) => [...farmTransactions, ...current.filter((entry) => entry.recipient !== "Celestia Valley Farms")]);
+        }
+      }
       window.setTimeout(() => setIsBootstrapping(false), 700);
     })();
-  }, []);
+  }, [location.pathname]);
 
   const payees = getDemoState().payees;
   const payeeOptions = payees.map((payee) => `${payee.name} (***)`);
@@ -106,6 +155,8 @@ export function PayTransferPage() {
   const prepareTransferConfirmation = (values: TransferForm) => {
     setProcessingStage("idle");
     setProcessingOverlayOpen(false);
+    setTransferSuccessPromptOpen(false);
+    setLimitReachedPromptOpen(false);
     setTransferFailedPromptOpen(false);
     setPendingTransfer({ formValues: values, payload: buildTransferPayload(values) });
     setTransferConfirmOpen(true);
@@ -113,6 +164,7 @@ export function PayTransferPage() {
 
   const onTransfer = async (values: TransferForm) => {
     setIsTransferring(true);
+    const processingStepDelay = 1550;
 
     // Step 1: lock confirm modal controls, then transition into full-screen processing.
     await wait(300);
@@ -123,27 +175,68 @@ export function PayTransferPage() {
     setProcessingChecks({ recipient: false, encryption: false, sending: false, balance: false });
 
     try {
-      await wait(1100);
+      await wait(processingStepDelay);
       setProcessingChecks((current) => ({ ...current, recipient: true }));
       setProcessingProgress(35);
 
-      await wait(1100);
+      await wait(processingStepDelay);
       setProcessingChecks((current) => ({ ...current, encryption: true }));
       setProcessingProgress(60);
 
-      await wait(1100);
+      await wait(processingStepDelay);
       setProcessingChecks((current) => ({ ...current, sending: true }));
       setProcessingProgress(85);
 
-      await wait(1100);
+      await wait(processingStepDelay);
       setProcessingChecks((current) => ({ ...current, balance: true }));
       setProcessingProgress(100);
 
-      await wait(300);
+      await wait(500);
       setProcessingOverlayOpen(false);
       setProcessingStage("idle");
+      if (location.pathname.endsWith("/amount")) {
+        await api.post("/transactions/withdraw", {
+          accountId: values.fromAccountId,
+          amount: Number(values.amount),
+          description: `Transfer to Celestia Valley Farms${transferNote.trim() ? ` - ${transferNote.trim()}` : ""}`,
+          status: "Pending"
+        });
+        const { data: refreshedAccounts } = await api.get<Account[]>("/accounts");
+        setAccounts(refreshedAccounts);
+        const reachesTransferLimit = transferCount + 1 >= transferLimit;
+        setTransferCount((current) => Math.min(current + 1, transferLimit));
+        setTransferSuccessPromptOpen(!reachesTransferLimit);
+        setLimitReachedPromptOpen(reachesTransferLimit);
+        setRecentTransactions((current) => [
+          {
+            recipient: destinationAccount || "Celestia Valley Farms",
+            amount: `-${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(values.amount || 0))}`,
+            note: transferNote.trim() || "External",
+            date: new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date()),
+            status: "Pending"
+          },
+          ...current
+        ]);
+      }
       setPendingTransfer(null);
-      setTransferFailedPromptOpen(true);
+      if (!location.pathname.endsWith("/amount")) {
+        const supportedTransferTypes = ["Domestic Transfer", "ACH Transfer", "International Wire Transfer"];
+        const shouldShowFailedPrompt = !destinationAccountSelected && supportedTransferTypes.includes(transactionType);
+        if (shouldShowFailedPrompt) {
+          setRecentTransactions((current) => [
+            {
+              recipient: recipientName || "Payment Recipient",
+              amount: `-${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(values.amount || 0))}`,
+              note: values.description || "Payment Processing",
+              date: new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date()),
+              status: "Pending"
+            },
+            ...current
+          ]);
+        }
+        setTransferFailedPromptOpen(shouldShowFailedPrompt);
+        setTransferSuccessPromptOpen(!shouldShowFailedPrompt);
+      }
     } finally {
       setIsTransferring(false);
     }
@@ -165,15 +258,272 @@ export function PayTransferPage() {
     setIsPayingBill(false);
   };
 
-  const sanitizeLetterInput = (value: string) => value.replace(/[^A-Za-z\s]/g, "").replace(/\s{2,}/g, " ");
+  const sanitizeLetterInput = (value: string) => value.replace(/[^A-Za-z\s]/g, "").replace(/\s{2,}/g, " ").slice(0, 60);
   const sanitizeDigits = (value: string, maxLength: number) => value.replace(/\D/g, "").slice(0, maxLength);
   const sanitizeAlphaNumeric = (value: string, maxLength: number) => value.replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, maxLength);
+
+  const handleDestinationSelection = (selected: string) => {
+    setDestinationAccount(selected);
+    setDestinationAccountSelected(true);
+    setRecipientName(selected);
+    setDestinationMenuOpen(false);
+
+    if (selected === "Celestia Valley Farms") {
+      navigate(`/dashboard/pay-transfer/amount?recipient=${encodeURIComponent(selected)}`);
+    }
+  };
+
+  const handleTransferAmountSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const sourceAccountId = accounts[0]?.id || "checking";
+    const amountValue = Number(transferAmount || 0);
+
+    if (!destinationAccount || !Number.isFinite(amountValue) || amountValue <= 0) {
+      return;
+    }
+
+    const transferDetails: PendingTransferDetails = {
+      formValues: {
+        fromAccountId: sourceAccountId,
+        toAccountId: "celestia-valley-farms",
+        amount: amountValue,
+        description: transferNote.trim() || `Transfer to ${destinationAccount}`
+      },
+      payload: {
+        fromAccountId: sourceAccountId,
+        toAccountId: "celestia-valley-farms",
+        amount: amountValue,
+        description: transferNote.trim() || `Transfer to ${destinationAccount}`
+      }
+    };
+
+    setPendingTransfer(transferDetails);
+    setTransferConfirmOpen(true);
+  };
+
+  const resetFarmTransfer = () => {
+    setTransferAmount("250");
+    setTransferNote("");
+    setTransferConfirmOpen(false);
+    setPendingTransfer(null);
+  };
 
   if (isBootstrapping) {
     return (
       <section className="panel rounded-2xl p-8 text-center text-slate-600">
-        <div className="mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-[#145A5A]/30 border-t-[#145A5A]" />
+        <div className="mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-[#006B8E]/30 border-t-[#006B8E]" />
         Loading transfer tools...
+      </section>
+    );
+  }
+
+  if (isTransferAmountStep && selectedDestinationFromQuery) {
+    return (
+      <section className="mx-auto max-w-2xl space-y-5">
+        <div className="rounded-[24px] border border-[#9ac3a3] bg-[#dfeee1] p-5">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2fa853] text-2xl text-white">
+              ✓
+            </span>
+            <span className="text-2xl font-bold uppercase tracking-[0.05em] text-[#114b2a]">Transfers Available</span>
+          </div>
+
+          <div className="mt-5 h-3 w-full overflow-hidden rounded-full bg-[#b6c9b8]">
+            <div className="h-full rounded-full bg-[#2fa853] transition-all duration-700" style={{ width: `${(transferCount / transferLimit) * 100}%` }} />
+          </div>
+
+          <div className="mt-4 flex items-center justify-between gap-4 text-2xl font-bold text-slate-900">
+            <span>{transferCount} / {transferLimit}</span>
+            <span>{transferCount} remaining</span>
+          </div>
+        </div>
+
+        <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#006B8E]">Transfer Funds</p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-800">{destinationAccount}</h1>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard/pay-transfer")}
+            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+          >
+            Back
+          </button>
+        </div>
+
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-[#f8f9fc] px-5 py-2">
+          <div className="flex items-center justify-between border-b border-slate-200 py-4 text-base text-slate-700">
+            <span>Account:</span>
+            <span className="font-semibold text-slate-900">****{accounts[0]?.accountNumber.slice(-4) || "0428"}</span>
+          </div>
+          <div className="flex items-center justify-between border-b border-slate-200 py-4 text-base text-slate-700">
+            <span>To Account:</span>
+            <span className="font-semibold text-slate-900">{destinationAccount || "-"}</span>
+          </div>
+          <div className="flex items-center justify-between py-4 text-base text-slate-700">
+            <span>Amount:</span>
+            <span className="font-semibold text-slate-900">{transferAmount ? `$${Number(transferAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}` : "-"}</span>
+          </div>
+        </div>
+
+        <form className="space-y-5" onSubmit={(event) => void handleTransferAmountSubmit(event)}>
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-slate-800">Amount to transfer</span>
+            <input
+              type="number"
+              min="0.01"
+              step="0.01"
+              value={transferAmount}
+              onChange={(event) => setTransferAmount(event.target.value)}
+              className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#2e7b72] focus:outline-none"
+              placeholder="Enter amount"
+            />
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-slate-800">Note</span>
+            <input
+              type="text"
+              value={transferNote}
+              onChange={(event) => setTransferNote(sanitizeLetterInput(event.target.value))}
+              className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#2e7b72] focus:outline-none"
+              placeholder="Add a note for this transfer"
+            />
+          </label>
+
+          <div className="grid gap-3 pt-2 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={resetFarmTransfer}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              <span className="text-xl">↻</span>
+              Reset
+            </button>
+            <button
+              type="submit"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#3566bd] px-6 text-base font-semibold text-white transition hover:bg-[#28539f]"
+            >
+              <span className="text-lg">➤</span>
+              Transfer Funds
+            </button>
+          </div>
+        </form>
+
+        </div>
+
+        <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <div className="mb-5 flex items-center gap-3">
+            <span className="text-2xl text-[#3566bd]">◔</span>
+            <h2 className="text-2xl font-bold tracking-tight text-[#294d88]">Recent Transfers</h2>
+          </div>
+          <div className="divide-y divide-slate-200">
+            {recentTransactions.map((transaction, index) => (
+              <div key={`${transaction.recipient}-${transaction.date}-${index}`} className="grid gap-2 py-5 sm:grid-cols-[1fr_auto] sm:items-center">
+                <div>
+                  <p className="text-lg font-semibold text-slate-800">{transaction.recipient}</p>
+                  <p className="mt-1 text-sm text-slate-500">{transaction.date}</p>
+                  <span className="mt-2 inline-flex rounded-full bg-[#d8f0f2] px-3 py-1 text-xs font-medium text-[#286775]">{transaction.note || "External"}</span>
+                </div>
+                <p className="text-lg font-bold text-[#bb4053]">{transaction.amount}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {transferConfirmOpen && pendingTransfer ? (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/45 p-4">
+            <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
+              <div className="border-b border-slate-200 px-6 py-4">
+                <p className="text-lg font-semibold text-slate-900">Confirm Transfer</p>
+                <p className="mt-1 text-sm text-slate-600">Review the details before making this transfer.</p>
+              </div>
+              <div className="space-y-3 px-6 py-5 text-sm text-slate-800">
+                <p><span className="font-semibold text-slate-600">To:</span> {destinationAccount}</p>
+                <p><span className="font-semibold text-slate-600">Amount:</span> {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(pendingTransfer.payload.amount || 0))}</p>
+                <p><span className="font-semibold text-slate-600">Note:</span> {pendingTransfer.payload.description || "No note"}</p>
+              </div>
+              <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTransferConfirmOpen(false);
+                    setPendingTransfer(null);
+                  }}
+                  className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Edit Details
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void confirmAndSubmitTransfer()}
+                  className="rounded-xl bg-[#006B8E] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005A7A]"
+                >
+                  Confirm Transfer
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {processingOverlayOpen ? (
+          <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-900/20 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-xl rounded-3xl border border-white/30 bg-transparent p-7 sm:p-8">
+              <img
+                src="/front-page-logo.svg"
+                alt="Tampa Bay Credit Union"
+                className="mx-auto h-24 w-24 animate-[logoBlink_900ms_ease-in-out_infinite] rounded-full border border-white/40 bg-white/80 object-contain p-2 shadow-lg"
+              />
+              <p className="mt-5 text-center text-2xl font-bold tracking-tight text-white">Processing Your Transfer</p>
+              <p className="mx-auto mt-3 max-w-lg text-center text-sm text-white/90">Please wait while we securely verify and process your transfer.</p>
+              <div className="mt-6 space-y-3 rounded-2xl border border-white/35 bg-white/10 p-4">
+                <p className={`text-sm font-medium ${processingChecks.recipient ? "text-emerald-200" : "text-white/75"}`}>{processingChecks.recipient ? "✔" : "○"} Verifying recipient...</p>
+                <p className={`text-sm font-medium ${processingChecks.encryption ? "text-emerald-200" : "text-white/75"}`}>{processingChecks.encryption ? "✔" : "○"} Encrypting transfer...</p>
+                <p className={`text-sm font-medium ${processingChecks.sending ? "text-emerald-200" : "text-white/75"}`}>{processingChecks.sending ? "✔" : "○"} Sending funds...</p>
+                <p className={`text-sm font-medium ${processingChecks.balance ? "text-emerald-200" : "text-white/75"}`}>{processingChecks.balance ? "✔" : "○"} Updating account balance...</p>
+              </div>
+              <div className="mt-7 flex flex-col items-center gap-4">
+                <div className="h-11 w-11 animate-spin rounded-full border-[3px] border-white/30 border-t-white" />
+                <div className="w-full max-w-md">
+                  <div className="h-2.5 overflow-hidden rounded-full bg-white/30">
+                    <div className="h-full rounded-full bg-white transition-all duration-700 ease-out" style={{ width: `${processingProgress}%` }} />
+                  </div>
+                  <p className="mt-2 text-center text-xs font-semibold tracking-[0.14em] text-white/85">{processingProgress}%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {transferSuccessPromptOpen ? (
+          <div className="fixed inset-0 z-[140] flex items-center justify-center bg-slate-900/45 p-4">
+            <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
+              <p className="text-lg font-semibold text-emerald-700">Transfer Sent</p>
+              <p className="mt-3 text-sm text-slate-700">Your transfer to {destinationAccount} was sent successfully.</p>
+              {recentTransactions[0] ? (
+                <div className="mt-4 rounded-xl border border-slate-200 bg-[#f8fbfc] p-4 text-sm text-slate-800">
+                  <p className="font-semibold text-slate-600">Transaction History</p>
+                  <div className="mt-3 space-y-2">
+                    <p><span className="font-semibold text-slate-600">Recipient:</span> {recentTransactions[0].recipient}</p>
+                    <p><span className="font-semibold text-slate-600">Amount:</span> {recentTransactions[0].amount}</p>
+                    <p><span className="font-semibold text-slate-600">Note:</span> {recentTransactions[0].note}</p>
+                    <p><span className="font-semibold text-slate-600">Date:</span> {recentTransactions[0].date}</p>
+                    <p><span className="font-semibold text-slate-600">Status:</span> <span className="font-semibold text-emerald-700">{recentTransactions[0].status}</span></p>
+                  </div>
+                </div>
+              ) : null}
+              <div className="mt-5 flex justify-end">
+                <button type="button" onClick={() => setTransferSuccessPromptOpen(false)} className="rounded-xl bg-[#006B8E] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005A7A]">
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
       </section>
     );
   }
@@ -216,7 +566,7 @@ export function PayTransferPage() {
                 <button
                   type="button"
                   onClick={() => void navigatePage("/dashboard/manage-payees", { title: "Manage Payees", skeleton: "generic", durationMs: 760 })}
-                  className="text-base font-semibold text-[#1f7a7a] underline underline-offset-4 hover:text-[#145A5A]"
+                  className="text-base font-semibold text-[#1f7a7a] underline underline-offset-4 hover:text-[#006B8E]"
                 >
                   Manage Payees
                 </button>
@@ -282,129 +632,141 @@ export function PayTransferPage() {
               </form>
             </>
           ) : (
-            <form className="mt-4 space-y-4 rounded-2xl border border-slate-200 bg-[#f8fbfc] p-5" onSubmit={handleSubmit(prepareTransferConfirmation)}>
+            <form className="mt-4 space-y-4 rounded-2xl border border-slate-200 bg-[#f3f5f4] p-5" onSubmit={handleSubmit(prepareTransferConfirmation)}>
               <div className="grid gap-4 md:grid-cols-2">
+                <label className="block md:col-span-2">
+                  <span className="mb-2 block text-sm font-medium text-slate-800">To Account</span>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setDestinationMenuOpen((value) => !value)}
+                      className="flex h-12 w-full items-center justify-between rounded-xl border border-slate-300 bg-white px-3 text-left text-base font-medium text-slate-900 shadow-sm transition hover:border-[#2e7b72] focus:outline-none focus:ring-2 focus:ring-[#2e7b72]/20"
+                    >
+                      <span>Select Destination Account</span>
+                      <span className="text-xl text-slate-500">▾</span>
+                    </button>
+
+                    {destinationMenuOpen ? (
+                      <div className="mt-2 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+                        <button
+                          type="button"
+                          onClick={() => handleDestinationSelection("Celestia Valley Farms")}
+                          className="flex w-full items-center rounded-lg px-3 py-2 text-left text-base text-slate-800 transition hover:bg-[#edf7f5]"
+                        >
+                          Celestia Valley Farms
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                </label>
+
                 <label className="block">
                   <span className="mb-2 block text-sm font-medium text-slate-800">Recipient Name</span>
                   <input
-                    type="text"
-                    required
+                    className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#2e7b72] focus:outline-none"
                     value={recipientName}
                     onChange={(event) => setRecipientName(sanitizeLetterInput(event.target.value))}
                     placeholder="Recipient name"
-                    pattern="[A-Za-z ]+"
-                    title="Recipient name must contain letters only"
-                    className="h-12 w-full rounded-xl border border-slate-300 px-3 text-base text-slate-900"
                   />
                 </label>
 
                 <label className="block">
                   <span className="mb-2 block text-sm font-medium text-slate-800">Transaction Type</span>
-                  <select
-                    value={transactionType}
-                    onChange={(event) => setTransactionType(event.target.value)}
-                    className="h-12 w-full rounded-xl border border-slate-300 px-3 text-base text-slate-900"
-                  >
-                    <option>International Wire Transfer</option>
-                    <option>Domestic Wire Transfer</option>
-                    <option>External Bank Transfer</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={transactionType}
+                      onChange={(event) => setTransactionType(event.target.value)}
+                      className="h-12 w-full appearance-none rounded-xl border border-[#6ec7d9] bg-white px-3 pr-10 text-base font-medium text-slate-900 shadow-sm focus:outline-none"
+                    >
+                      <option>International Wire Transfer</option>
+                      <option>Domestic Transfer</option>
+                      <option>ACH Transfer</option>
+                    </select>
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xl text-slate-500">⌄</span>
+                  </div>
                 </label>
-              </div>
 
-              <label className="block">
-                <span className="mb-2 block text-sm font-medium text-slate-800">Recipient Bank</span>
-                <input
-                  type="text"
-                  required
-                  value={recipientBank}
-                  onChange={(event) => setRecipientBank(sanitizeLetterInput(event.target.value))}
-                  placeholder="Recipient bank name"
-                  pattern="[A-Za-z ]+"
-                  title="Recipient bank name must contain letters only"
-                  className="h-12 w-full rounded-xl border border-slate-300 px-3 text-base text-slate-900"
-                />
-              </label>
-
-              <div className="grid gap-4 md:grid-cols-2">
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium text-slate-800">Account Number</span>
+                  <span className="mb-2 block text-sm font-medium text-slate-800">Recipient Bank</span>
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    required
-                    value={recipientAccountNumber}
-                    onChange={(event) => setRecipientAccountNumber(sanitizeDigits(event.target.value, 14))}
-                    placeholder="Enter account number"
-                    maxLength={14}
-                    pattern="\d{1,14}"
-                    title="Account number must contain up to 14 digits"
-                    className="h-12 w-full rounded-xl border border-slate-300 px-3 text-base text-slate-900"
+                    className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#2e7b72] focus:outline-none"
+                    value={recipientBank}
+                    onChange={(event) => setRecipientBank(sanitizeLetterInput(event.target.value))}
+                    placeholder="Recipient bank name"
                   />
                 </label>
 
                 <label className="block">
                   <span className="mb-2 block text-sm font-medium text-slate-800">Routing Number</span>
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    required
+                    className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#2e7b72] focus:outline-none"
                     value={routingNumber}
                     onChange={(event) => setRoutingNumber(sanitizeDigits(event.target.value, 9))}
                     placeholder="Enter routing number"
-                    maxLength={9}
-                    pattern="\d{9}"
-                    title="Routing number must be exactly 9 digits"
-                    className="h-12 w-full rounded-xl border border-slate-300 px-3 text-base text-slate-900"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium text-slate-800">Account Number</span>
+                  <input
+                    className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#2e7b72] focus:outline-none"
+                    value={recipientAccountNumber}
+                    onChange={(event) => setRecipientAccountNumber(sanitizeDigits(event.target.value, 12))}
+                    placeholder="Enter account number"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium text-slate-800">SWIFT Code</span>
+                  <input
+                    className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#2e7b72] focus:outline-none"
+                    value={swiftCode}
+                    onChange={(event) => setSwiftCode(sanitizeAlphaNumeric(event.target.value, 10))}
+                    placeholder="Enter SWIFT code"
                   />
                 </label>
               </div>
-
-              {transactionType === "International Wire Transfer" ? (
-                <label className="block md:max-w-[420px]">
-                  <span className="mb-2 block text-sm font-medium text-slate-800">SWIFT Code</span>
-                  <input
-                    type="text"
-                    required
-                    value={swiftCode}
-                    onChange={(event) => setSwiftCode(sanitizeAlphaNumeric(event.target.value, 13))}
-                    placeholder="Enter SWIFT code"
-                    maxLength={13}
-                    pattern="[A-Za-z0-9]{1,13}"
-                    title="SWIFT code must contain letters and numbers only, up to 13 characters"
-                    className="h-12 w-full rounded-xl border border-slate-300 px-3 text-base text-slate-900"
-                  />
-                </label>
-              ) : null}
 
               <label className="block">
                 <span className="mb-2 block text-sm font-medium text-slate-800">Source account</span>
-                <select className="h-12 w-full rounded-xl border border-slate-300 px-3 text-base text-slate-900" {...register("fromAccountId")}>
-                  {accounts.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.type === "CHECKING" ? "Everyday Checking" : account.type === "SAVINGS" ? "Rainy Day Savings" : "12-Month Fixed Deposit"} ({account.accountNumber}) - {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(account.balance)}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select className="h-12 w-full appearance-none rounded-xl border border-slate-300 bg-[#e9ecec] px-3 pr-10 text-base font-semibold text-slate-900 shadow-sm focus:border-[#2e7b72] focus:outline-none" {...register("fromAccountId")}>
+                    {accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.type === "CHECKING" ? "Everyday Checking" : account.type === "SAVINGS" ? "Rainy Day Savings" : "12-Month Fixed Deposit"} (**** {account.accountNumber.slice(-4)}) - {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(account.balance)}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xl text-slate-500">⌄</span>
+                </div>
               </label>
 
-              <div className="grid gap-4 md:grid-cols-3">
-                <label className="block md:col-span-1">
-                  <span className="mb-2 block text-sm font-medium text-slate-800">Amount</span>
-                <input className="h-12 w-full rounded-xl border border-slate-300 px-3 text-base text-slate-900" type="number" min="0.01" step="0.01" {...register("amount")} />
-                </label>
-              </div>
+              <label className="block">
+                <span className="mb-2 block text-sm font-medium text-slate-800">Amount</span>
+                <input
+                  className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#2e7b72] focus:outline-none"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="250"
+                  {...register("amount")}
+                />
+              </label>
 
               <label className="block">
                 <span className="mb-2 block text-sm font-medium text-slate-800">Note (optional)</span>
-                <input className="h-12 w-full rounded-xl border border-slate-300 px-3 text-base text-slate-900" placeholder="What is this for?" {...register("description")} />
+                <input
+                  className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#2e7b72] focus:outline-none"
+                  placeholder="What is this for?"
+                  {...register("description")}
+                />
               </label>
 
-              <div>
+              <div className="pt-1">
                 <button
                   type="submit"
                   disabled={isTransferring}
-                  className="rounded-full bg-[#145A5A] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0f4747] disabled:cursor-not-allowed disabled:opacity-70"
+                  className="rounded-full bg-[#006B8E] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#005A7A] disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {isTransferring ? (
                     <span className="inline-flex items-center gap-2">
@@ -464,7 +826,7 @@ export function PayTransferPage() {
               <button
                 type="button"
                 onClick={() => setBillUnavailablePromptOpen(false)}
-                className="rounded-xl bg-[#145A5A] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0f4747]"
+                className="rounded-xl bg-[#006B8E] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005A7A]"
               >
                 OK
               </button>
@@ -484,28 +846,39 @@ export function PayTransferPage() {
             <div className="space-y-4 px-6 py-5">
               <div className="rounded-xl border border-slate-200 bg-[#f8fbfc] p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Recipient</p>
-                <div className="mt-2 grid gap-3 text-sm text-slate-800 md:grid-cols-2">
-                  <p>
-                    <span className="font-semibold text-slate-600">Name:</span> {recipientName}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-slate-600">Type:</span> {transactionType}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-slate-600">Bank:</span> {recipientBank}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-slate-600">Account:</span> {recipientAccountNumber}
-                  </p>
-                  <p className="md:col-span-2">
-                    <span className="font-semibold text-slate-600">Routing:</span> {routingNumber}
-                  </p>
-                  {transactionType === "International Wire Transfer" ? (
+                {destinationAccount === "Celestia Valley Farm" ? (
+                  <div className="mt-2 grid gap-3 text-sm text-slate-800 md:grid-cols-2">
                     <p className="md:col-span-2">
-                      <span className="font-semibold text-slate-600">SWIFT:</span> {swiftCode || "Not provided"}
+                      <span className="font-semibold text-slate-600">Account Name:</span> {destinationAccount}
                     </p>
-                  ) : null}
-                </div>
+                    <p className="md:col-span-2">
+                      <span className="font-semibold text-slate-600">Type:</span> External Wire Transfer
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mt-2 grid gap-3 text-sm text-slate-800 md:grid-cols-2">
+                    <p>
+                      <span className="font-semibold text-slate-600">Name:</span> {recipientName || destinationAccount || "Celestia Valley Farm"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-600">Type:</span> {transactionType}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-600">Bank:</span> {recipientBank || "Selected destination account"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-600">Account:</span> {recipientAccountNumber || "Not required"}
+                    </p>
+                    <p className="md:col-span-2">
+                      <span className="font-semibold text-slate-600">Routing:</span> {routingNumber || "Not required"}
+                    </p>
+                    {transactionType === "International Wire Transfer" ? (
+                      <p className="md:col-span-2">
+                        <span className="font-semibold text-slate-600">SWIFT:</span> {swiftCode || "Not required"}
+                      </p>
+                    ) : null}
+                  </div>
+                )}
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-[#f8fbfc] p-4">
@@ -518,9 +891,6 @@ export function PayTransferPage() {
                   <p>
                     <span className="font-semibold text-slate-600">Amount:</span>{" "}
                     {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(pendingTransfer.payload.amount || 0))}
-                  </p>
-                  <p className="md:col-span-2">
-                    <span className="font-semibold text-slate-600">Note:</span> {pendingTransfer.payload.description || "No note added"}
                   </p>
                 </div>
               </div>
@@ -546,7 +916,7 @@ export function PayTransferPage() {
                 type="button"
                 disabled={isTransferring}
                 onClick={() => void confirmAndSubmitTransfer()}
-                className="rounded-xl bg-[#145A5A] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0f4747] disabled:cursor-not-allowed disabled:opacity-70"
+                className="rounded-xl bg-[#006B8E] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005A7A] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isTransferring ? (
                   <span className="inline-flex items-center gap-2">
@@ -563,56 +933,40 @@ export function PayTransferPage() {
       ) : null}
 
       {processingOverlayOpen ? (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-900/45 p-4 backdrop-blur-md">
-          <div className="w-full max-w-xl rounded-3xl border border-slate-200/80 bg-white p-7 shadow-[0_34px_90px_rgba(15,23,42,0.28)] sm:p-8">
-            <p className="text-center text-[1.6rem] font-bold tracking-tight text-slate-900 sm:text-[1.85rem]">Processing Your Transfer</p>
-            <p className="mx-auto mt-3 max-w-lg text-center text-sm text-slate-600 sm:text-base">
-              Please wait while we securely verify and process your transfer.
-            </p>
-
-            <div className="mt-6 space-y-3 rounded-2xl border border-slate-200 bg-[#f8fbfc] p-4">
-              <p className={`text-sm font-medium transition ${processingChecks.recipient ? "text-emerald-700" : "text-slate-500"}`}>
-                {processingChecks.recipient ? "✔" : "○"} Verifying recipient...
-              </p>
-              <p className={`text-sm font-medium transition ${processingChecks.encryption ? "text-emerald-700" : "text-slate-500"}`}>
-                {processingChecks.encryption ? "✔" : "○"} Encrypting transfer...
-              </p>
-              <p className={`text-sm font-medium transition ${processingChecks.sending ? "text-emerald-700" : "text-slate-500"}`}>
-                {processingChecks.sending ? "✔" : "○"} Sending funds...
-              </p>
-              <p className={`text-sm font-medium transition ${processingChecks.balance ? "text-emerald-700" : "text-slate-500"}`}>
-                {processingChecks.balance ? "✔" : "○"} Updating account balance...
-              </p>
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-900/20 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-3xl border border-white/30 bg-transparent p-7 sm:p-8">
+            <img src="/front-page-logo.svg" alt="Tampa Bay Credit Union" className="mx-auto h-24 w-24 animate-[logoBlink_900ms_ease-in-out_infinite] rounded-full border border-white/40 bg-white/80 object-contain p-2 shadow-lg" />
+            <p className="mt-5 text-center text-2xl font-bold tracking-tight text-white">Processing Your Transfer</p>
+            <p className="mx-auto mt-3 max-w-lg text-center text-sm text-white/90">Please wait while we securely verify and process your transfer.</p>
+            <div className="mt-6 space-y-3 rounded-2xl border border-white/35 bg-white/10 p-4">
+              <p className={`text-sm font-medium ${processingChecks.recipient ? "text-emerald-200" : "text-white/75"}`}>{processingChecks.recipient ? "✔" : "○"} Verifying recipient...</p>
+              <p className={`text-sm font-medium ${processingChecks.encryption ? "text-emerald-200" : "text-white/75"}`}>{processingChecks.encryption ? "✔" : "○"} Encrypting transfer...</p>
+              <p className={`text-sm font-medium ${processingChecks.sending ? "text-emerald-200" : "text-white/75"}`}>{processingChecks.sending ? "✔" : "○"} Sending funds...</p>
+              <p className={`text-sm font-medium ${processingChecks.balance ? "text-emerald-200" : "text-white/75"}`}>{processingChecks.balance ? "✔" : "○"} Updating account balance...</p>
             </div>
-
             <div className="mt-7 flex flex-col items-center gap-4">
-              <div className="h-11 w-11 animate-spin rounded-full border-[3px] border-[#145A5A]/20 border-t-[#145A5A]" />
+              <div className="h-11 w-11 animate-spin rounded-full border-[3px] border-white/30 border-t-white" />
               <div className="w-full max-w-md">
-                <div className="h-2.5 overflow-hidden rounded-full bg-slate-200">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-[#145A5A] to-[#28A79E] transition-all duration-700 ease-out"
-                    style={{ width: `${processingProgress}%` }}
-                  />
-                </div>
-                <p className="mt-2 text-center text-xs font-semibold tracking-[0.14em] text-slate-500">{processingProgress}%</p>
+                <div className="h-2.5 overflow-hidden rounded-full bg-white/30"><div className="h-full rounded-full bg-white transition-all duration-700 ease-out" style={{ width: `${processingProgress}%` }} /></div>
+                <p className="mt-2 text-center text-xs font-semibold tracking-[0.14em] text-white/85">{processingProgress}%</p>
               </div>
             </div>
           </div>
         </div>
       ) : null}
 
-      {transferFailedPromptOpen ? (
+      {transferSuccessPromptOpen ? (
         <div className="fixed inset-0 z-[140] flex items-center justify-center bg-slate-900/45 p-4">
           <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
-            <p className="text-lg font-semibold text-red-700">Failed Transaction</p>
+            <p className="text-lg font-semibold text-emerald-700">Transfer Sent</p>
             <p className="mt-3 text-sm text-slate-700">
-              Your transaction has failed. Our system detected unusual account activity and has taken steps to protect your account. Contact Any nearest branch with your valid  ID for verification.We apologize for the inconvenience and appreciate your prompt attention to this matter
+              Your transfer to {destinationAccount || "Celestia Valley Farms"} was sent successfully.
             </p>
             <div className="mt-5 flex justify-end">
               <button
                 type="button"
-                onClick={() => setTransferFailedPromptOpen(false)}
-                className="rounded-xl bg-[#145A5A] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0f4747]"
+                onClick={() => setTransferSuccessPromptOpen(false)}
+                className="rounded-xl bg-[#006B8E] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005A7A]"
               >
                 OK
               </button>
@@ -620,6 +974,66 @@ export function PayTransferPage() {
           </div>
         </div>
       ) : null}
+
+      {transferFailedPromptOpen ? (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-900/45 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
+            <p className="text-lg font-semibold text-black">Payment Processing</p>
+            <p className="mt-3 text-sm leading-6 text-slate-700">
+              Your payment Case No: 40008724539 has been processed and funds will be paid into your bank account in 7 working days. Enquiries contact local Labour Centre. Case No: 40008724539
+            </p>
+            <div className="mt-5 rounded-xl border border-slate-200 bg-[#f8fbfc] p-4 text-sm text-slate-800">
+              <p className="font-semibold text-slate-600">Transaction History</p>
+              <div className="mt-3 space-y-2">
+                <p><span className="font-semibold text-slate-600">Recipient:</span> {recentTransactions[0]?.recipient || recipientName || "Payment Recipient"}</p>
+                <p><span className="font-semibold text-slate-600">Amount:</span> {recentTransactions[0]?.amount || `-${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(pendingTransfer?.payload.amount || 0))}`}</p>
+                <p><span className="font-semibold text-slate-600">Note:</span> {recentTransactions[0]?.note || pendingTransfer?.payload.description || "Payment Processing"}</p>
+                <p><span className="font-semibold text-slate-600">Date:</span> {recentTransactions[0]?.date || new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date())}</p>
+                <p><span className="font-semibold text-slate-600">Status:</span> <span className="font-semibold text-amber-700">Pending</span></p>
+              </div>
+            </div>
+            <div className="mt-5 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setTransferFailedPromptOpen(false)}
+                className="rounded-xl bg-[#006B8E] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005A7A]"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+        {limitReachedPromptOpen ? (
+          <div className="fixed inset-0 z-[145] flex items-center justify-center bg-slate-900/45 p-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 text-center shadow-2xl">
+              <p className="text-2xl font-bold text-amber-700">Limit Reached</p>
+              <p className="mt-3 text-sm text-slate-700">You have reached the 10/10 transfer limit.</p>
+              {recentTransactions[0] ? (
+                <div className="mt-4 rounded-xl border border-slate-200 bg-[#f8fbfc] p-4 text-left text-sm text-slate-800">
+                  <p className="font-semibold text-slate-600">Transaction History</p>
+                  <div className="mt-3 space-y-2">
+                    <p><span className="font-semibold text-slate-600">Recipient:</span> {recentTransactions[0].recipient}</p>
+                    <p><span className="font-semibold text-slate-600">Amount:</span> {recentTransactions[0].amount}</p>
+                    <p><span className="font-semibold text-slate-600">Note:</span> {recentTransactions[0].note}</p>
+                    <p><span className="font-semibold text-slate-600">Date:</span> {recentTransactions[0].date}</p>
+                    <p><span className="font-semibold text-slate-600">Status:</span> <span className="font-semibold text-emerald-700">{recentTransactions[0].status}</span></p>
+                  </div>
+                </div>
+              ) : null}
+              <div className="mt-5 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setLimitReachedPromptOpen(false)}
+                  className="rounded-xl bg-[#006B8E] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#005A7A]"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
     </section>
   );
 }

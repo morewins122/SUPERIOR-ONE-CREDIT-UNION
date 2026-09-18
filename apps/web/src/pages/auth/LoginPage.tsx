@@ -18,7 +18,7 @@ export function LoginPage() {
 
   return (
     <section className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <article className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0f5f57] via-[#176d63] to-[#0c4e47] p-8 text-white shadow-[0_28px_70px_rgba(14,63,58,0.35)] sm:p-10">
+      <article className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0077A8] via-[#176d63] to-[#0c4e47] p-8 text-white shadow-[0_28px_70px_rgba(14,63,58,0.35)] sm:p-10">
         <div className="pointer-events-none absolute -right-16 -top-20 h-60 w-60 rounded-full bg-white/10 blur-2xl" />
         <div className="pointer-events-none absolute -bottom-20 -left-14 h-56 w-56 rounded-full bg-[#58b89a]/25 blur-2xl" />
 
@@ -49,7 +49,7 @@ export function LoginPage() {
           </div>
 
           <div className="mt-8 rounded-2xl bg-white p-4 shadow-lg">
-            <img src="/front-page-logo.svg" alt="One Credit Union" className="mx-auto w-full max-w-[420px] object-contain" />
+            <img src="/front-page-logo.svg" alt="Tampa Bay Credit Union" className="mx-auto w-full max-w-[420px] object-contain" />
           </div>
         </div>
       </article>

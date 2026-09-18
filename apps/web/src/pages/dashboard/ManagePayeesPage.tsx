@@ -129,7 +129,7 @@ export function ManagePayeesPage() {
                   value={accountNumber}
                   onChange={(event) => setAccountNumber(event.target.value)}
                   placeholder="Enter account number"
-                  className="h-12 w-full rounded-xl border border-slate-200 bg-[#eef5f8] px-4 text-base text-slate-800 placeholder:text-slate-500 focus:border-[#145A5A] focus:outline-none"
+                  className="h-12 w-full rounded-xl border border-slate-200 bg-[#eef5f8] px-4 text-base text-slate-800 placeholder:text-slate-500 focus:border-[#006B8E] focus:outline-none"
                 />
               </label>
 
@@ -142,7 +142,7 @@ export function ManagePayeesPage() {
                   value={confirmAccountNumber}
                   onChange={(event) => setConfirmAccountNumber(event.target.value)}
                   placeholder="Re-enter account number"
-                  className="h-12 w-full rounded-xl border border-slate-200 bg-[#eef5f8] px-4 text-base text-slate-800 placeholder:text-slate-500 focus:border-[#145A5A] focus:outline-none"
+                  className="h-12 w-full rounded-xl border border-slate-200 bg-[#eef5f8] px-4 text-base text-slate-800 placeholder:text-slate-500 focus:border-[#006B8E] focus:outline-none"
                 />
                 <span className="mt-2 block text-sm text-slate-600">Enter again for confirmation</span>
               </label>
@@ -156,7 +156,7 @@ export function ManagePayeesPage() {
                     value={payeeName}
                     onChange={(event) => setPayeeName(event.target.value)}
                     placeholder="Enter payee name"
-                    className="h-12 w-full rounded-xl border border-slate-200 bg-[#eef5f8] px-4 text-base text-slate-800 placeholder:text-slate-500 focus:border-[#145A5A] focus:outline-none"
+                    className="h-12 w-full rounded-xl border border-slate-200 bg-[#eef5f8] px-4 text-base text-slate-800 placeholder:text-slate-500 focus:border-[#006B8E] focus:outline-none"
                   />
                 </label>
 
@@ -165,7 +165,7 @@ export function ManagePayeesPage() {
                   <select
                     value={payeeCategory}
                     onChange={(event) => setPayeeCategory(event.target.value)}
-                    className="h-12 w-full rounded-xl border border-slate-200 bg-[#eef5f8] px-4 text-base text-slate-800 focus:border-[#145A5A] focus:outline-none"
+                    className="h-12 w-full rounded-xl border border-slate-200 bg-[#eef5f8] px-4 text-base text-slate-800 focus:border-[#006B8E] focus:outline-none"
                   >
                     <option>Utilities</option>
                     <option>Insurance</option>
@@ -178,7 +178,7 @@ export function ManagePayeesPage() {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="rounded-2xl bg-[#145A5A] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0f4747]"
+                  className="rounded-2xl bg-[#006B8E] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#005A7A]"
                 >
                   Save Payee
                 </button>
